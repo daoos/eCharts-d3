@@ -1,0 +1,16 @@
+<template name="home">
+	{{> charts}}
+</template>
+
+<template name="charts">
+	<div class="row">
+		<div class="col-md-12">
+			<!-- demo01 简介-->
+			<button class="btn btn-lg btn-info" id="chart01">绘制一个最简单的柱形图</button>
+			<button class="btn btn-lg btn-info" id="chart02">绘制一个南丁格尔图</button>
+			<hr>
+			<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+			<div id="demo" class="demo"></div>
+		</div>
+	</div>
+</template>
