@@ -53,7 +53,6 @@ $(function(){
             console.log(cvalue);
             data[i].value[0] += 1;
             data[i].value[1] = (cvalue * svalue + signal)/cvalue;
-            showRippleEffect();
         }
     }
 
@@ -206,8 +205,8 @@ $(function(){
             max : -60,
             y: '60%',
             calculable : true,
-            color: ['#ff3333', 'orange', 'yellow','lime','aqua'],
-            //show: true
+            color: ['#D1EEEE', '#7EC0EE','#4876FF','#0000FF'],
+            show: false
         },
         
         series : [
@@ -221,7 +220,7 @@ $(function(){
                 },    
                 showEffectOn: 'render',
                 rippleEffect: {
-                    brushType: ''
+                    brushType: 'stroke'
                 },
                 hoverAnimation: true,
                 itemStyle: {
@@ -258,12 +257,5 @@ $(function(){
         option.bmap.center = [114.0548, 22.5530];
         myChart.setOption(option, true);
     })
-
-    function showRippleEffect() {
-        option.series[0].rippleEffect.brushType = 'stroke';
-        setTimeout(function(){
-            option.series[0].rippleEffect.brushType = '';
-        }, 1500)
-    }
 
 })
