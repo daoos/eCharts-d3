@@ -1,9 +1,9 @@
 $(function(){
-    var dom = document.getElementById("container");
+    var dom = document.getElementById("main");
     var myChart = echarts.init(dom);
     var app = {};
     option = null;
-    var n = 10, m = 25, count_base = 20, signal_base = -90, base_size = 1, factor = 2;
+    var n = 10, m = 25, count_base = 20, signal_base = -90, base_size = 1, factor = 1.5;
     var sz_lat_base = 114.0548, sz_long_base = 22.5530, cs_lat_base = 113.0281, cs_long_base = 28.2238;
     var data = [], geoCoordMap = {};
     var unit_id, rdm01, rdm02, rdm03, rdm04, total_counts, avg_sigal, xiaoqu, lat, long, signal;
@@ -53,6 +53,7 @@ $(function(){
             console.log(cvalue);
             data[i].value[0] += 1;
             data[i].value[1] = (cvalue * svalue + signal)/cvalue;
+            showRippleEffect();
         }
     }
 
@@ -73,22 +74,6 @@ $(function(){
     console.log(data[0]);
     console.log(geoCoordMap['000000']);
     console.log(convertData(data)[0]);
-
-    // var convertedData = [
-    //     convertData(data),
-    //     convertData(data.sort(function (a, b) {
-    //         return a.value - b.value;
-    //     }).slice(0, 16))
-    // ];
-    // var category = [];
-    // var bardata = [];
-    // for(var i = 0, n = convertedData[1].length; i < n; i++) {
-    //     var idx = convertedData[1][i];
-    //     var cvalue = idx.name;
-    //     var bdata = idx.value[2];
-    //     category.push(cvalue);
-    //     bardata.push(bdata);
-    // }
 
     option = {
         animation: true,
@@ -153,7 +138,7 @@ $(function(){
                     'featureType': 'green',
                     'elementType': 'all',
                     'stylers': {
-                        'visibility': 'off'
+                        'visibility': 'on'
                     }
                 }, {
                     'featureType': 'subway',
@@ -216,6 +201,14 @@ $(function(){
                     + '平均信号强度' + '：' + Math.round(value[3]) + '<br>';
             }
         },
+        dataRange: {
+            min : -130,
+            max : -60,
+            y: '60%',
+            calculable : true,
+            color: ['#ff3333', 'orange', 'yellow','lime','aqua'],
+            //show: true
+        },
         
         series : [
             {
@@ -228,7 +221,7 @@ $(function(){
                 },    
                 showEffectOn: 'render',
                 rippleEffect: {
-                    brushType: 'stroke'
+                    brushType: ''
                 },
                 hoverAnimation: true,
                 itemStyle: {
@@ -236,7 +229,7 @@ $(function(){
                         color: 'green',
                         shadowBlur: 10,
                         shadowColor: '#333',
-                        opacity: 0.3
+                        opacity: 0.6
                     }
                 },
                 zlevel: 1
@@ -247,6 +240,30 @@ $(function(){
 
     if (option && typeof option === "object") {
         myChart.setOption(option, true);
+    }
+
+    $("#china").hover(function(){
+        option.bmap.zoom = 6;
+        myChart.setOption(option, true);
+    })
+
+    $("#cs").hover(function(){
+        option.bmap.zoom = 13.5;
+        option.bmap.center = [113.0281, 28.2238];
+        myChart.setOption(option, true);
+    })
+
+    $("#sz").hover(function(){
+        option.bmap.zoom = 13.5;
+        option.bmap.center = [114.0548, 22.5530];
+        myChart.setOption(option, true);
+    })
+
+    function showRippleEffect() {
+        option.series[0].rippleEffect.brushType = 'stroke';
+        setTimeout(function(){
+            option.series[0].rippleEffect.brushType = '';
+        }, 1500)
     }
 
 })
