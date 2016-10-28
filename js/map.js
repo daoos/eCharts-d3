@@ -20,17 +20,17 @@ $(function(){
     
     function getUnitArea(){
         $.ajax({
-            url: location.json,
+            url: 'location.json',
             dataType:'json',
             success: function(result){
-                for(var i=0, n=result.msg.length; i<n; i++) {
-                    unit_id = result.msg[i].unit_id;
-                    xiaoqu_name = result.msg[i].name;
-                    city_code = result.msg[i].city_code;
-                    city_name = result.msg[i].city_name;
-                    province = result.msg[i].province;
-                    lat = result.msg[i].lat;
-                    lng = result.msg[i].lng;
+                for(var i=0, n=result.length; i<n; i++) {
+                    unit_id = result[i].unit_id;
+                    xiaoqu_name = result[i].name;
+                    city_code = result[i].city_code;
+                    city_name = result[i].city_name;
+                    province = result[i].province;
+                    lat = Number(result[i].lat);
+                    lng = Number(result[i].lng);
                     create_xiaoqu(unit_id, xiaoqu_name, lat, lng, city_code, city_name, province);
                     pl = province_data.length;
                     create_province(lat, lng, province, total_counts, avg_sigal, pl);
@@ -566,7 +566,7 @@ function loadGauge() {
 	}
 }
 
-//使用 websocket 实现实时数据更新
+//使用 websocket 实现实时数据更新，后台代码还没写
 var webSocket = new WebSocket('ws://192.168.99.100:8080'); 
 webSocket.onerror = function(event) {
     onError(event)
