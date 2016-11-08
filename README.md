@@ -1,6 +1,6 @@
 # dataVisualization_eCharts
 - 使用百度 echarts 设计个性化图表并实现数据可视化
-- 使用 websocket 获取实时数据
+- 随机创建模拟数据
 - 使用 ajax 从服务器获取基础数据
 
 如何查看：
