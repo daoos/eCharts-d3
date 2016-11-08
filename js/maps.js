@@ -4,24 +4,24 @@ var top10 = [], data = [], geoCoordMap = {}, province_data = [], city_data = [];
 var angel = [], members = [], dot_geo = {}, convert = [], xq = [], success_rate = [], dataXQ = [], dataDT = [];
 var unit_id, xiaoqu_name, total_counts, avg_sigal, xiaoqu, signal, open_status, network, open_door, city_code, city_name, province, pl, cl, base_size, factor;
 var z = 1, j = 1, lat = 0, lng = 0, s_counts = 9501, f_counts = 499, t0 = 0;
-var count_base = 15000, signal_base = -90, a = 36, r = 1.2, success_counts = 0, fail_counts = 0, success_base = 95.01;
+var count_base = 15000, signal_base = -90, a = 36, r = 1.2, success_counts = 0, fail_counts = 0, success_base = 95;
 
 $(function(){
     getUnitArea();
     angels_division(a);
-
+    var kmjg;
     var interval01 = setInterval(function() {
     var message = [];
-    var kmjg = (Math.random() * 145 + 5) * 1000;
-    var signal = ((Math.random() * 50 - 120) * 100) / 100;
-    var kmfs = ['一键开门', '摇一摇', '亮屏开门', '自动开门'];
-    var kmwl = ['蓝牙', 'wifi'];
+    kmjg = (Math.random() * 145 + 800) * 1000;
+    var signal = Math.floor(Math.random() * 50 - 120);
+    var kmfs = ['1', '2', '3', '4'];
+    var kmwl = ['1', '2', '3', '4', '1', '1'];
     var status = ['1', '2', '3', '4', '5', '6', '7', '6', '7', '6', '7', '6', '7', '6', '7', '6', '7'];
     var kmsb = ['苹果 iPhone 7 32GB', '三星 Galaxy S7 Edge 32G', '华为 P9全网通高配版', 'vivo X7 Plus', '苹果 iPhone 6s Plus', 'OPPO R9s全网通', '三星Galaxy C7', '魅族 魅蓝Note3高配版'];
     var rdm1 = Math.floor(Math.random() * xq.length);
     var rdm2 = Math.floor(Math.random() * kmfs.length);
     var rdm3 = Math.floor(Math.random() * kmwl.length);
-    var drm4 = Math.floor(Math.random() * status.length);
+    var rdm4 = Math.floor(Math.random() * status.length);
     var rdm5 = Math.floor(Math.random() * kmsb.length);
     message = [xq[rdm1], status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
     onMessages(message);
@@ -29,7 +29,7 @@ $(function(){
 
     //test() not working? everytime I run this app I want some random data for testing.
     //test();
-});
+})
 
 function getUnitArea(){
     $.ajax({
@@ -37,15 +37,15 @@ function getUnitArea(){
         dataType:'json',
         success: function(result){
         	//获取基础数据，小区id,小区名称等
+
             for(var i=0, n=result.length; i<n; i++) {
                 unit_id = result[i].unit_id;
                 xiaoqu_name = result[i].name;
                 city_code = result[i].city_code;
                 city_name = result[i].city_name;
                 province = result[i].province;
-                //数据库字段设计有误！
-                lng = result[i].lat;
-                lat = result[i].lng;
+                lat = Number(result[i].lat);
+                lng = Number(result[i].lng);
                 //各种创建数组，就是为了实现有数据传入时在地图打圈圈的功能
                 xq.push(unit_id);
                 pl = province_data.length;
@@ -57,7 +57,6 @@ function getUnitArea(){
             }
             //然后加载百度echarts图表，其他图表在有数据传输过来时才生成
             loadEChart(data, geoCoordMap);
-            console.log(xq);
         },
         error: function(){
             alert("加载数据异常！");
@@ -272,10 +271,15 @@ function line_effect(unit_id) {
     }
 }
 
+function getNowFormatDate(){
+  var nowTime = new Date().getYear();
+  return nowTime;
+}
+
 //生成展示数据的表格并在前端展示
 function re_loadEChart(unit_id, xiaoqu_name, open_status, signal, network, open_door, DT, z) {
 	//var table02_head = '<table style="width:100%; color:#1E90FF" id="display-detail-data"><caption>智能小区实时开门数据</caption><tr class="tr1" style="color:#1E90FF"><td style="width:23%; word-wrap: break-word;">小区名称</td><td>开门时间</td><td>信号强度</td><td>开门方式</td><td style="width:26%; word-wrap: break-word;">开门设备</td><td>网络状态</td><td>开门状态</td></tr>';
-    var table02_head = '<table style="width:100%; color:#1E90FF" id="display-detail-data"><tr class="tr1" style="color:#1E90FF"><td style="width:23%; word-wrap: break-word;">小区名称</td><td>开门时间</td><td>信号强度</td><td>开门方式</td><td style="width:26%; word-wrap: break-word;">开门设备</td><td>网络状态</td><td>开门状态</td></tr>';
+    var table02_head = '<table style="width:100%; color:#1E90FF" id="display-detail-data"><tr class="tr1" style="color:#1E90FF"><td style="width:13%; word-wrap: break-word;">小区名称</td><td>开门时间</td><td>信号强度</td><td>开门方式</td><td style="width:26%; word-wrap: break-word;">开门设备</td><td>网络状态</td><td>开门状态</td></tr>';
     var table_foot = '</table>';
     if(network === '1') {
 		network = "wifi"
@@ -761,7 +765,7 @@ function loadGauge() {
 			    title : {
 			        textStyle: {       
 			            fontWeight: 'bolder',
-			            fontSize: 15,
+			            fontSize: 10,
 			            fontStyle: 'italic',
 			            color: '#fff',
 			            shadowColor : '#fff', //默认透明
@@ -779,7 +783,7 @@ function loadGauge() {
 			        textStyle: {       
 			            fontWeight: 'bolder',
 			            color: '#a1d99b',
-			            fontSize:22
+			            fontSize:16
 			        }
 			    },
 			    data:[{value: success_base, name: '开门成功率'}]
@@ -837,7 +841,7 @@ function loadParallel() {
             {dim: 0, name: schema[0].text, min:1, inverse: true, nameLocation: 'start'},
             {dim: 1, name: schema[1].text, min:-120, max:-70},  
             {dim: 2, name: schema[2].text, type: 'category', data: ["wifi", "蓝牙"]},
-            {dim: 3, name: schema[3].text, type: 'category', data: ["摇一摇", "一键开门", "自助开门", "亮屏开门"]},
+            {dim: 3, name: schema[3].text, type: 'category', data: ["摇一摇", "一键开门", "自动开门", "亮屏开门"]},
             {dim: 4, name: schema[4].text, type: 'category', data: dataDT},
             //{dim: 5, name: schema[5].text, type: 'category', data: ["1", "2","3","4","5","6","7"]}
             {dim: 5, name: schema[5].text, type: 'category', data: ["失败", "成功"]}
@@ -854,8 +858,8 @@ function loadParallel() {
 //             }
 //         },
 	    parallel: {
-	    	 top: '33.6',
-	         left: 25,
+	    	 top: '33.0',
+	         left: 20,
 	         right: 30,
 	         bottom: 15,
             //axisExpandable: true,
@@ -907,8 +911,6 @@ function loadParallel() {
 	
 	app.timeTicket = setInterval(function () {
 		//每隔一段时间检查数据是否更新，并更新图表
-    console.log(dataDT);
-    console.log(dataXQ.length);
 		option_parallel.parallelAxis[4].data = dataDT;
 		option_parallel.series[0].data = dataXQ;
 		myChart_parallel.setOption(option_parallel, true);
