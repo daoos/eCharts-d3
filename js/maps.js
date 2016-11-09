@@ -715,7 +715,7 @@ function loadGauge() {
 	var app = {};
 	option_gauge = null;
 	option_gauge = {
-		backgroundColor: 'rgba(30,144,255,.23)',
+		//backgroundColor: 'rgba(30,144,255,.23)',
 	    series: [
 			{
 			    name:'开门指标',
