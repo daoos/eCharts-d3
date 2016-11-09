@@ -89,11 +89,11 @@ function convertData(data, geoCoordMap) {
 
 //创建小区数组，随机生成total_counts和avg_signal作为测试用的~
 function create_xiaoqu(unit_id, xiaoqu_name, lat, lng, city_code, city_name, province) {
-    //var rdm01 = (Math.random() * 8 + 2) / 10;
-    var rdm01 = 1;
+    var rdm01 = (Math.random() * 8 + 2) / 10;
+    //var rdm01 = 1;
     var rdm02 = (Math.random() * 7 + 7) / 10;
     total_counts = count_base * rdm01;
-    avg_sigal = signal_base * rdm02;
+    avg_sigal = Math.random() * 50 - 120;
     xiaoqu = {name: unit_id, value: [total_counts, avg_sigal]};
     data.push(xiaoqu);
     geoCoordMap[unit_id] = [lat, lng, xiaoqu_name, province, city_name, city_code];
@@ -380,7 +380,7 @@ function loadEChart(data, geoCoordMap) {
     var series = [];
     var app = {};
     option = null;
-	series.push(
+	   series.push(
         {
             name: 'xiqoqu',
             type: 'effectScatter',
@@ -454,6 +454,14 @@ function loadEChart(data, geoCoordMap) {
       animationEasing: 'cubicInOut',
       animationDurationUpdate: 1000,
       animationEasingUpdate: 'cubicInOut',
+       title: {
+            text: '小区开门信号强度',
+            left: 'right',
+            textStyle: {
+                color: '#fff',
+                fontSize:12.5
+            }
+        },
       geo: {
     		center:[111.601265,28.02564],
             map: 'china',
@@ -526,7 +534,98 @@ function loadEChart(data, geoCoordMap) {
         //其实前面不用push直接把对象放在这里也是可以的吧
         series : series
     };
-    
+    //当没有数据时，convert变为空，checking中的if函数中的内容就不会执行，也就不会每过一段时间就把opening push到series
+    var setNull = setInterval(function() {
+        convert = {};
+    }, 5000) 
+
+  //打圈圈和转圈圈，设置检测时间为1秒钟。
+    var checking = setInterval(function() {
+        //每隔一段时间检查一下当前时间，然后跟前一次有数据进来时记录的时间做比较，若时间差超出一定范围，也即很长时间没有数据发送过来，则将convert清空
+        var t1 = new Date().getTime();
+        if(t0 > 0) {
+            if((t1 - t0) > 20000) {
+                convert = {};
+            }
+        }
+      //重置数据
+    series[0].data = convertData(data, geoCoordMap);
+    //随机选择一种颜色
+    var color = ['#fff7bc', '#fec44f', '#d95f0e', '#f03b20', '#dd1c77', 'yellow', 'yellow', 'yellow', 'blue']
+    var i = Math.floor(Math.random() * 6);
+      var opening = {
+          type: 'lines',
+          zlevel: 1,
+          effect: {
+              show: true,
+              period: 1.8,
+              //constantSpeed:200,
+              trailLength: 0,
+              //symbol: planePath,
+              //symbolSize: 1
+          },
+          lineStyle: {
+              normal: {
+                  color: color[i],
+                  width: 1,
+                  opacity: 0.1,
+                  //curveness: 0.3
+              }
+          },
+          data: convert
+      };
+      if($.isEmptyObject(convert) != true) {
+        series.push(opening);
+
+      myChart.setOption({
+                //当有数据产生时将地图放大并将中心移动到指定位置
+        geo: {
+          center:[110.601265,28.02564],
+          zoom:1.5,
+          roam: true,
+        },
+        //给离散化数据进行分组
+        visualMap: {
+//          min: -120,
+//              max: -60,
+//              splitNumber: 3,
+//              inRange: {
+//                  color: ['#fc8d59','#ffffbf','#91cf60'].reverse()
+//              },
+//              textStyle: {
+//                  color: '#fff'
+//              }
+                top: 30,
+                right: 20,
+                textStyle: {
+                    color: '#ffffff',
+                    fontWeight: 'bolder',
+                  fontSize: 12,
+                },
+                pieces: [{
+                    gt: -120,
+                    lte: -105,
+                    color: '#fc8d59'
+                }, {
+                    gt: -105,
+                    lte: -85,
+                    color: '#ffffbf'
+                }, {
+                    gt: -85,
+                    lte: -70,
+                    color: '#91cf60'
+                }],
+                outOfRange: {
+                    color: 'red'
+                }
+            },
+        series: series
+      });
+      }
+        if(series.length > 1) {
+            series = series.slice(0,1);
+        }
+    }, 2000)
     if (option && typeof option === "object") {
         myChart.setOption(option, true);
     }   
