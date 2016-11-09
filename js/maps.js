@@ -4,12 +4,12 @@ var top10 = [], data = [], geoCoordMap = {}, province_data = [], city_data = [];
 var angel = [], members = [], dot_geo = {}, convert = [], xq = [], success_rate = [], dataXQ = [], dataDT = [];
 var unit_id, xiaoqu_name, total_counts, avg_sigal, xiaoqu, signal, open_status, network, open_door, city_code, city_name, province, pl, cl, base_size, factor;
 var z = 1, j = 1, lat = 0, lng = 0, s_counts = 9501, f_counts = 499, t0 = 0;
-var count_base = 15000, signal_base = -90, a = 36, r = 1.2, success_counts = 0, fail_counts = 0, success_base = 95;
+var count_base = 15000, signal_base = -90, a = 36, r = 1.2, success_counts = 0, fail_counts = 0, success_base = 75;
+var interval = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 
 $(function(){
     getUnitArea();
     angels_division(a);
-    var kmjg = 500;
     var interval01 = setInterval(function() {
       var message = [];
       var signal = Math.floor(Math.random() * 50 - 120);
@@ -24,7 +24,7 @@ $(function(){
       var rdm5 = Math.floor(Math.random() * kmsb.length);
       message = [xq[rdm1], status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
       onMessages(message);
-    }, kmjg);
+    }, 0);
 
     //test() not working? everytime I run this app I want some random data for testing.
     //test();
@@ -227,21 +227,6 @@ function onMessages(arr) {
   z++;
 }
 
-function onOpen(event) {
-    //alert("Connection established")
-      /*document.getElementById('messages').innerHTML
-      = 'Connection established';*/
-}
-
-function onError(event) {
-    alert(event.data);
-}
-
-function start() {
-    webSocket.send('hello');
-    return false;
-}
-
 function convertData02(data, dot_geo) {
 	var res = [];
     for (var i = 0; i < data.length; i++) {
@@ -270,21 +255,45 @@ function line_effect(unit_id) {
     }
 }
 
-function getNowFormatDate(){
-  var nowTime = new Date().getYear();
-  return nowTime;
+function getNowFormatDate() {
+    var date = new Date();
+    var seperator1 = "-";
+    var seperator2 = ":";
+    var month = date.getMonth() + 1;
+    var strDate = date.getDate();
+    if (month >= 1 && month <= 9) {
+        month = "0" + month;
+    }
+    if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+    }
+    
+    var hour_time = date.getMinutes();
+    if (hour_time >= 0 && hour_time <= 9) {
+        hour_time = "0" + hour_time;
+    }
+    
+    var seconds_time = date.getSeconds();
+    if (seconds_time >= 0 && seconds_time <= 9) {
+        seconds_time = "0" + seconds_time;
+    }
+    
+    var currentdate = date.getHours() + seperator2 + hour_time
+            + seperator2 + seconds_time;
+    return currentdate;
 }
+
 
 //生成展示数据的表格并在前端展示
 function re_loadEChart(unit_id, xiaoqu_name, open_status, signal, network, open_door, DT, z) {
 	//var table02_head = '<table style="width:100%; color:#1E90FF" id="display-detail-data"><caption>智能小区实时开门数据</caption><tr class="tr1" style="color:#1E90FF"><td style="width:23%; word-wrap: break-word;">小区名称</td><td>开门时间</td><td>信号强度</td><td>开门方式</td><td style="width:26%; word-wrap: break-word;">开门设备</td><td>网络状态</td><td>开门状态</td></tr>';
-    var table02_head = '<table style="width:100%; color:#1E90FF" id="display-detail-data"><tr class="tr1" style="color:#1E90FF"><td style="width:13%; word-wrap: break-word;">小区名称</td><td>开门时间</td><td>信号强度</td><td>开门方式</td><td style="width:26%; word-wrap: break-word;">开门设备</td><td>网络状态</td><td>开门状态</td></tr>';
+    var table02_head = '<table style="width:100%; color:#1E90FF" id="display-detail-data"><tr class="tr1" style="color:#1E90FF"><td style="width:11%; word-wrap: break-word;">小区名称</td><td>开门时间</td><td>信号强度</td><td>开门方式</td><td style="width:28%; word-wrap: break-word;">开门设备</td><td>网络状态</td><td>开门状态</td></tr>';
     var table_foot = '</table>';
     if(network === '1') {
-		network = "wifi"
-	} else {
-		network = "蓝牙"
-	}
+  		network = "wifi"
+  	} else {
+  		network = "蓝牙"
+  	}
     switch(open_door){
     case '1':
     	open_door = "一键开门";
@@ -321,9 +330,9 @@ function re_loadEChart(unit_id, xiaoqu_name, open_status, signal, network, open_
 			  }
 		  }
 	}
-      //将开门数据放入数组 dataXQ的格式 dataXQ = {[1,-55,"wifi","摇一摇","XIAOMI#MUI4",1],...}
-      var elmt = [z, signal, network, open_door, DT, open_status];
-      dataXQ.push(elmt);
+    //将开门数据放入数组 dataXQ的格式 dataXQ = {[1,-55,"wifi","摇一摇","XIAOMI#MUI4",1],...}
+    var elmt = [z, signal, network, open_door, open_status];
+    dataXQ.push(elmt);
 	  $("#chart02").html("");
 	  $("#chart02").html(table02_head+str+table_foot);
 	  var failClass = document.getElementsByClassName("fail");
@@ -446,9 +455,9 @@ function loadEChart(data, geoCoordMap) {
       animationDurationUpdate: 1000,
       animationEasingUpdate: 'cubicInOut',
       geo: {
-    		center:[110.601265,33.02564],
+    		center:[111.601265,28.02564],
             map: 'china',
-            zoom: 1.2,
+            zoom: 1,
             roam: true,
             itemStyle: {
                 normal: {
@@ -517,190 +526,6 @@ function loadEChart(data, geoCoordMap) {
         //其实前面不用push直接把对象放在这里也是可以的吧
         series : series
     };
-
-    //当没有数据时，convert变为空，checking中的if函数中的内容就不会执行，也就不会每过一段时间就把opening push到series
-    var setNull = setInterval(function() {
-        convert = {};
-    }, 5000) 
-
-	//打圈圈和转圈圈，设置检测时间为1秒钟。
-    var checking = setInterval(function() {
-        //每隔一段时间检查一下当前时间，然后跟前一次有数据进来时记录的时间做比较，若时间差超出一定范围，也即很长时间没有数据发送过来，则将convert清空
-        var t1 = new Date().getTime();
-        if(t0 > 0) {
-            if((t1 - t0) > 20000) {
-                convert = {};
-            }
-        }
-    	//重置数据
-		series[0].data = convertData(data, geoCoordMap);
-		//随机选择一种颜色
-		var color = ['#fff7bc', '#fec44f', '#d95f0e', '#f03b20', '#dd1c77', 'yellow', 'yellow']
-		var i = Math.floor(Math.random() * 6);
-	    var opening = {
-	        type: 'lines',
-	        zlevel: 1,
-	        effect: {
-	            show: true,
-	            period: 1.8,
-	            //constantSpeed:200,
-	            trailLength: 0,
-	            //symbol: planePath,
-	            //symbolSize: 1
-	        },
-	        lineStyle: {
-	            normal: {
-	                color: color[i],
-	                width: 1,
-	                opacity: 0.1,
-	                //curveness: 0.3
-	            }
-	        },
-	        data: convert
-	    };
-	    if($.isEmptyObject(convert) != true) {
-	    	series.push(opening)
-			myChart.setOption({
-                //当有数据产生时将地图放大并将中心移动到指定位置
-				geo: {
-					center:[110.601265,25.02564],
-					zoom:2.0,
-					roam: true,
-				},
-				//给离散化数据进行分组
-				visualMap: {
-//					min: -120,
-//			        max: -60,
-//			        splitNumber: 3,
-//			        inRange: {
-//			            color: ['#fc8d59','#ffffbf','#91cf60'].reverse()
-//			        },
-//			        textStyle: {
-//			            color: '#fff'
-//			        }
-		            top: 30,
-		            right: 20,
-		            textStyle: {
-		                color: '#ffffff',
-		                fontWeight: 'bolder',
-			            fontSize: 15,
-		            },
-		            pieces: [{
-		                gt: -130,
-		                lte: -100,
-		                color: '#fc8d59'
-		            }, {
-		                gt: -100,
-		                lte: -80,
-		                color: '#ffffbf'
-		            }, {
-		                gt: -80,
-		                lte: -60,
-		                color: '#91cf60'
-		            }],
-		            outOfRange: {
-		                color: 'red'
-		            }
-		        },
-				series: series
-			});
-	    }
-        if(series.length > 1) {
-            series = series.slice(0,1);
-        }
-    }, 2000)
-    
-    //双击和单击对应不同事件
-	$("#main").dblclick(function() {
-		clearInterval(checking);
-        if(series.length > 1) {
-            series = series.slice(0,1);
-        }
-		myChart.setOption({
-			geo: {
-	    		//center:[110.601265,33.02564],
-	            //map: 'china',
-	            zoom: 1.2,
-	            roam: true,
-//	            itemStyle: {
-//	                normal: {
-//	                    areaColor: '#000000',
-//	                    borderColor: '#1E90FF'
-//	                },
-//	                emphasis: {
-//	                    areaColor: '#FFFAFA',
-//	                    opacity: 0.2
-//	                }
-//	            }
-	        },	
-		    visualMap: {
-		    	show:false,
-		    },    
-		    series: [{
-			    	data: province_data,
-			    	rippleEffect: {
-	                    //brushType: ''
-	                	brushType: 'stroke'
-	                },
-	                itemStyle: {
-	                    normal: {
-	                        color: '#f7f7f7',
-	                        shadowBlur: 10,
-	                        shadowColor: '#333',
-	                        opacity: 0.6
-	                    }
-	                }
-			    }]
-		})
-	});
-	$("#main").toggle(function() {
-		myChart.setOption({
-			visualMap: {
-				show:false,
-	            top: 30,
-	            right: 20,
-	            textStyle: {
-	                color: '#ffffff',
-	                fontWeight: 'bolder',
-		            fontSize: 15,
-	            },
-	            pieces: [{
-	                gt: -130,
-	                lte: -100,
-	                color: '#fc8d59'
-	            }, {
-	                gt: -100,
-	                lte: -80,
-	                color: '#ffffbf'
-	            }, {
-	                gt: -80,
-	                lte: -60,
-	                color: '#91cf60'
-	            }],
-	            outOfRange: {
-	                color: 'red'
-	            }
-	        },
-		    series: [{
-			    	data: city_data,
-			    	rippleEffect: {
-	                	brushType: 'stroke'
-	                },
-			    }]
-		})
-	}, function() {
-		myChart.setOption({
-	        visualMap: {
-		    	show:true,
-		    }, 
-		    series: [{
-		    	data: convertData(data, geoCoordMap),
-		    	rippleEffect: {
-		    			brushType: 'stroke'
-	                },
-			    }]
-		})
-	});
     
     if (option && typeof option === "object") {
         myChart.setOption(option, true);
@@ -714,14 +539,14 @@ function loadGauge() {
 	var app = {};
 	option_gauge = null;
 	option_gauge = {
-		//backgroundColor: 'rgba(30,144,255,.23)',
+		backgroundColor: 'rgba(30,144,255,.23)',
+
 	    series: [
 			{
 			    name:'开门指标',
 			    type:'gauge',
-			    min:50,
+			    min:40,
 			    max:100,
-			    bottom:20,
 			    splitNumber:10,
 			    radius: '90%',
 			    axisLine: {            // 坐标轴线
@@ -817,14 +642,14 @@ function loadParallel() {
         {name: 'signal', index: 1, text: '信号'},
         {name: 'network', index: 2, text: '网络'},
         {name: 'way', index: 3, text: '方式'},
-        {name: 'DT', index: 4, text: '设备'},
-        {name: 'status', index: 5, text: '状态'}
+        //{name: 'DT', index: 4, text: '设备'},
+        {name: 'status', index: 4, text: '状态'}
    ];
     var lineStyle = {
         normal: {
             color: '#1E90FF',
             width: 0.5,
-            opacity: 0.18
+            opacity: 0.4
 //            	function(){
 //            	if (dataXQ.length > 200){
 //            		return 0.2
@@ -841,9 +666,9 @@ function loadParallel() {
             {dim: 1, name: schema[1].text, min:-120, max:-70},  
             {dim: 2, name: schema[2].text, type: 'category', data: ["wifi", "蓝牙"]},
             {dim: 3, name: schema[3].text, type: 'category', data: ["摇一摇", "一键开门", "自动开门", "亮屏开门"]},
-            {dim: 4, name: schema[4].text, type: 'category', data: dataDT},
+            //{dim: 4, name: schema[4].text, type: 'category', data: dataDT},
             //{dim: 5, name: schema[5].text, type: 'category', data: ["1", "2","3","4","5","6","7"]}
-            {dim: 5, name: schema[5].text, type: 'category', data: ["失败", "成功"]}
+            {dim: 4, name: schema[4].text, type: 'category', data: ["失败", "成功"]}
         ],
 //         visualMap: {
 //             show: false,
@@ -857,15 +682,15 @@ function loadParallel() {
 //             }
 //         },
 	    parallel: {
-	    	 top: '33.0',
-	         left: 20,
+	    	 top: '32.5',
+	         left: 23,
 	         right: 30,
-	         bottom: 15,
+	         bottom: 10,
             //axisExpandable: true,
             //axisExpandCenter: 15,
             //axisExpandCount: 4,
             //axisExpandWidth: 100,
-	        parallelAxisDefault: {
+	         parallelAxisDefault: {
 	            type: 'value',
 	            //name: 'AQI指数',
 	            nameLocation: 'end',
@@ -891,7 +716,7 @@ function loadParallel() {
 	            axisLabel: {
 	                textStyle: {
 	                    color: '#ffffff',
-	                    fontSize: 9
+	                    fontSize: 9.5
 	                }
 	            }
 	        }
@@ -910,7 +735,18 @@ function loadParallel() {
 	
 	app.timeTicket = setInterval(function () {
 		//每隔一段时间检查数据是否更新，并更新图表
-		option_parallel.parallelAxis[4].data = dataDT;
+		//option_parallel.parallelAxis[4].data = dataDT;
+    var n = dataXQ.length;
+    if(n > 1000 && n <= 10000) {
+      lineStyle.normal.opacity = 0.1;
+      lineStyle.normal.width = 0.2;
+      option_parallel.parallel.parallelAxisDefault.axisLabel.textStyle.color = '#99d8c9';
+    }
+    if(n > 10000){
+      lineStyle.normal.opacity = 0.005;
+      lineStyle.normal.width = 0.01;
+      option_parallel.parallel.parallelAxisDefault.axisLabel.textStyle.color = '#fc9272';
+    }
 		option_parallel.series[0].data = dataXQ;
 		myChart_parallel.setOption(option_parallel, true);
 	},50);
