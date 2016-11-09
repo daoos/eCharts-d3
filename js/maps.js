@@ -9,23 +9,22 @@ var count_base = 15000, signal_base = -90, a = 36, r = 1.2, success_counts = 0, 
 $(function(){
     getUnitArea();
     angels_division(a);
-    var kmjg;
+    var kmjg = 500;
     var interval01 = setInterval(function() {
-    var message = [];
-    kmjg = (Math.random() * 145 + 800) * 1000;
-    var signal = Math.floor(Math.random() * 50 - 120);
-    var kmfs = ['1', '2', '3', '4'];
-    var kmwl = ['1', '2', '3', '4', '1', '1'];
-    var status = ['1', '2', '3', '4', '5', '6', '7', '6', '7', '6', '7', '6', '7', '6', '7', '6', '7'];
-    var kmsb = ['苹果 iPhone 7 32GB', '三星 Galaxy S7 Edge 32G', '华为 P9全网通高配版', 'vivo X7 Plus', '苹果 iPhone 6s Plus', 'OPPO R9s全网通', '三星Galaxy C7', '魅族 魅蓝Note3高配版'];
-    var rdm1 = Math.floor(Math.random() * xq.length);
-    var rdm2 = Math.floor(Math.random() * kmfs.length);
-    var rdm3 = Math.floor(Math.random() * kmwl.length);
-    var rdm4 = Math.floor(Math.random() * status.length);
-    var rdm5 = Math.floor(Math.random() * kmsb.length);
-    message = [xq[rdm1], status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
-    onMessages(message);
-  }, kmjg);
+      var message = [];
+      var signal = Math.floor(Math.random() * 50 - 120);
+      var kmfs = ['1', '2', '3', '4'];
+      var kmwl = ['1', '2', '3', '4', '1', '1'];
+      var status = ['1', '2', '3', '4', '5', '6', '7', '6', '7', '6', '7', '6', '7', '6', '7', '6', '7'];
+      var kmsb = ['联想 新网9 128G', 'KUPAI R7 64G', 'BLACKBERRY 64G', '苹果 iPhone 7 32GB', '三星 Galaxy S7 Edge 32G', '华为 P9全网通高配版', 'vivo X7 Plus', '苹果 iPhone 6s Plus', 'OPPO R9s全网通', '三星Galaxy C7', '魅族 魅蓝Note3高配版'];
+      var rdm1 = Math.floor(Math.random() * xq.length);
+      var rdm2 = Math.floor(Math.random() * kmfs.length);
+      var rdm3 = Math.floor(Math.random() * kmwl.length);
+      var rdm4 = Math.floor(Math.random() * status.length);
+      var rdm5 = Math.floor(Math.random() * kmsb.length);
+      message = [xq[rdm1], status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
+      onMessages(message);
+    }, kmjg);
 
     //test() not working? everytime I run this app I want some random data for testing.
     //test();
@@ -181,7 +180,7 @@ function onMessages(arr) {
   signal = arr[3];
   network = arr[2];
   open_door = arr[4];
-  DT = arr[5];
+  DT = arr[5].toUpperCase();
   //若设备不存在列表中则将开门设备放入dataDT数组
   var n = dataDT.length;
   var c = 0;

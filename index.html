@@ -7,17 +7,7 @@
 	body {
 		background: #000000;
 	}
-	.ng-scope {
-		width:100%;
-		padding:0;
-		margin:0;
-		height:100%;
-
-		/*position:relative;*/
-		/*z-index:1*/
-	}
-	table
-	{
+	table {
 	    table-layout:fixed;
 		background:rgba(30,144,255,.23);
 	}
@@ -25,53 +15,53 @@
 		padding:5px;
 		text-align:center;
 		font-size:10px;
-		/* color:#319196; */
 	}	 
-	caption {
-		font-size:20px,bold;
-		color:#1E90FF;
-		padding-bottom:5px;
-		background:rgba(30,144,255,.40);
+	#main {
+		height:100%;
+		width:100%; 
+		position:relative; 
+		top:0; 
+		left:0;
 	}
-	#display-detail-data caption {
-		text-align:left;
-		padding-left:20px;
+	#chart00 {
+		width:15%; 
+		height:200px; 
+		position:absolute; 
+		z-index:2; 
+		bottom:220px; 
+		right:0;
+	}	
+	#chart02 {
+		position:absolute; 
+		text-align:center; 
+		width:45.5%; 
+		z-index:2; 
+		height:240px; 
+		left:0; 
+		overflow:hidden; 
+		bottom:0;
+	}
+	#chart01 {
+		position:absolute; 
+		width:54%; 
+		height:240px; 
+		z-index:2; 
+		right: 0; 
+		bottom:0;
 	}
 	</style>
 	</head>
 	<body>
-	<!-- 空白 div用于存放地图和其他图表，存放echarts图表的div要记得设置高度，不然前端没有展示 -->
-	<!-- <div class="data-people-content">
-		<div id="main" style="height:100%; width:100%; position:absolute; z-index:1; "></div>
-		<div id="right-dv" style="width:100%; position:absolute; z-index:2;">
-			<div id="chart02" style="padding-right:5px; text-align:center; width:40%; height:240px; float:left; overflow:hidden;"></div>
-			<div id="chart01" style="text-align:center; width:46%; height:240px; float:left;"></div>
-			<div id="chart00" style="padding-left:5px; text-align:center; width:13%; height:240px; float:right; "></div>
-		</div>
-	</div> -->
+		<!-- 空白 div用于存放地图和其他图表，存放echarts图表的div要记得设置高度，不然前端没有展示 -->
+		<div id="main"></div>
+		<div id="chart00"></div>
+		<div id="chart02"></div>
+		<div id="chart01"></div>
 
-<!-- 空白 div用于存放地图和其他图表，存放echarts图表的div要记得设置高度，不然前端没有展示 -->
-<div class="data-people-content ng-scope">
-	<div class="area-box" style="height:101%; width:100%; position:absolute; z-index:2;  top:0; left:0; ">
-		<div id="main" style="height:102.5%; width:100%"></div>
-	</div>
-	<!-- height=290px;width:30%;width:50%;width:18% -->
-	<div id="right-dv" style="width:100%;position:absolute; z-index:3; left:0; bottom:240px; ">
-		<div id="chart00" style="padding-left:5px; text-align:center; width:15%; height:200px; float:right; "></div>
-	</div>
-	<div id="right-dv" style="width:100%;position:absolute; z-index:3; left:0; bottom:0">
-		<div id="chart02" style="text-align:center; width:45.5%; height:240px; float:left; overflow:hidden;"></div>
-		<div id="chart01" style="text-align:center; width:54%; height:240px; float:right;"></div>
-	</div>
- </div>	
-
-	<script type="text/javascript" src="js/jquery.min.js"></script>
-	<script type="text/javascript" src="js/echarts-all-3.js"></script>
-	<script type="text/javascript" src="js/china.js"></script>
-	<script type="text/javascript" src="js/world.js"></script>
-<!-- 	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
-	<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
-	<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script> -->
-	<script type="text/javascript" src="js/maps.js"></script>
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/echarts-all-3.js"></script>
+		<script type="text/javascript" src="js/china.js"></script>
+		<script type="text/javascript" src="js/world.js"></script>
+		<script type="text/javascript" src="js/maps.js"></script>
 	</body>
 </html>
