@@ -3,14 +3,15 @@ var str = '';
 var top10 = [], data = [], geoCoordMap = {}, province_data = [], city_data = [];
 var angel = [], members = [], dot_geo = {}, convert = [], xq = [], success_rate = [], dataXQ = [], dataDT = [];
 var unit_id, xiaoqu_name, total_counts, avg_sigal, xiaoqu, signal, open_status, network, open_door, city_code, city_name, province, pl, cl, base_size, factor;
-var z = 1, j = 1, lat = 0, lng = 0, s_counts = 9501, f_counts = 499, t0 = 0;
+var z = 1, j = 1, lat = 0, lng = 0, s_counts = 9501, f_counts = 499, t0 = 0, tt = 0;
 var count_base = 15000, signal_base = -90, a = 36, r = 1.2, success_counts = 0, fail_counts = 0, success_base = 75;
 var interval = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 
 $(function(){
     getUnitArea();
     angels_division(a);
-    var interval01 = setInterval(function() {
+    setTimeout(function(){
+      var interval01 = setInterval(function() {
       var message = [];
       var signal = Math.floor(Math.random() * 50 - 120);
       var kmfs = ['1', '2', '3', '4'];
@@ -25,9 +26,7 @@ $(function(){
       message = [xq[rdm1], status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
       onMessages(message);
     }, 0);
-
-    //test() not working? everytime I run this app I want some random data for testing.
-    //test();
+    }, 10000)
 })
 
 function getUnitArea(){
@@ -463,9 +462,9 @@ function loadEChart(data, geoCoordMap) {
             }
         },
       geo: {
-    		center:[111.601265,28.02564],
+    		center:[110.601265,33.02564],
             map: 'china',
-            zoom: 1,
+            zoom: 1.2,
             roam: true,
             itemStyle: {
                 normal: {
@@ -576,7 +575,8 @@ function loadEChart(data, geoCoordMap) {
       };
       if($.isEmptyObject(convert) != true) {
         series.push(opening);
-
+        $("#main").unbind("dblclick");
+        $("#main").unbind("click");
       myChart.setOption({
                 //当有数据产生时将地图放大并将中心移动到指定位置
         geo: {
@@ -626,6 +626,103 @@ function loadEChart(data, geoCoordMap) {
             series = series.slice(0,1);
         }
     }, 2000)
+
+     //双击和单击对应不同事件
+  $("#main").dblclick(function() {
+    clearInterval(checking);
+        if(series.length > 1) {
+            series = series.slice(0,1);
+        }
+    myChart.setOption({
+      geo: {
+          //center:[110.601265,33.02564],
+              //map: 'china',
+              zoom: 1.2,
+              roam: true,
+//              itemStyle: {
+//                  normal: {
+//                      areaColor: '#000000',
+//                      borderColor: '#1E90FF'
+//                  },
+//                  emphasis: {
+//                      areaColor: '#FFFAFA',
+//                      opacity: 0.2
+//                  }
+//              }
+          },  
+        visualMap: {
+          show:false,
+        },    
+        series: [{
+            data: province_data,
+            rippleEffect: {
+                      //brushType: ''
+                    brushType: 'stroke'
+                  },
+                  itemStyle: {
+                      normal: {
+                          color: '#f7f7f7',
+                          shadowBlur: 10,
+                          shadowColor: '#333',
+                          opacity: 0.6
+                      }
+                  }
+          }]
+    })
+  });
+    $("#main").click(function(){
+      if(tt == 0) {
+         myChart.setOption({
+           visualMap: {
+             show:false,
+                   top: 30,
+                   right: 20,
+                   textStyle: {
+                       color: '#ffffff',
+                       fontWeight: 'bolder',
+                     fontSize: 15,
+                   },
+                   pieces: [{
+                    gt: -120,
+                    lte: -105,
+                    color: '#fc8d59'
+                }, {
+                    gt: -105,
+                    lte: -85,
+                    color: '#ffffbf'
+                }, {
+                    gt: -85,
+                    lte: -70,
+                    color: '#91cf60'
+                }],
+                   outOfRange: {
+                       color: 'red'
+                   }
+               },
+             series: [{
+                 data: city_data,
+                 rippleEffect: {
+                         brushType: 'stroke'
+                       },
+               }]
+         })
+         tt = 1;
+       } else {
+         myChart.setOption({
+               visualMap: {
+               show:true,
+             }, 
+             series: [{
+               data: convertData(data, geoCoordMap),
+               rippleEffect: {
+                   brushType: 'stroke'
+                       },
+               }]
+         })
+         tt = 0;
+       }
+    })
+
     if (option && typeof option === "object") {
         myChart.setOption(option, true);
     }   
@@ -853,47 +950,4 @@ function loadParallel() {
 	if (option_parallel && typeof option_parallel === "object") {
 	    myChart_parallel.setOption(option_parallel, true);
 	}
-}
-
-function test() {
-	//小区id集合，开门时间间隔，开门状态，网络状态，开门方式，开门设备
-	var myDate = new Date();
-	var kmjg = Math.random() * 20;
-	var kmfs = ['一键开门', '摇一摇', '亮屏开门', '自动开门'];
-	var kmwl = ['蓝牙', 'wifi'];
-	var status = [1, 2, 3, 4, 5, 6, 7];
-	var kmsb = ['苹果 iPhone 7 32GB', '三星 Galaxy S7 Edge 32G', '华为 P9全网通高配版', 'vivo X7 Plus', '苹果 iPhone 6s Plus', 'OPPO R9s全网通', '三星Galaxy C7', '魅族 魅蓝Note3高配版'];
-	var collection =[];
-	for(var i=0; i<xq.length; i++){
-		for(var j=0; j<kmfs.length; j++){
-			for(var k=0; k<kmwl.length; k++){
-				for(var l=0; l<status.length; l++){
-					for(var x=0; x<kmsb.length; x++){
-						var km = 'http://192.168.0.235:7890/log/put?' + 'UNIT_ID=' + xq[i] + '&'+ 'OPEN_DOOR=' + kmfs[j] + '&' + 'NETWORK=' + kmwl[k] + '&' + 'OPEN_STATUS=' + status[l] + '&' + 'DT=' + kmsb[x];
-						collection.push(km);
-					}
-				}
-			}
-		}
-	}
-	var idx01 = Math.floor(Math.random() * collection.length);
-	var idx02 = Math.floor(Math.random() * collection.length);
-	var idx03 = Math.floor(Math.random() * collection.length);
-  var idx04 = Math.floor(Math.random() * collection.length);
-  var idx05 = Math.floor(Math.random() * collection.length);
-  var idx06 = Math.floor(Math.random() * collection.length);
-	var w1 = window.open(collection[idx01], 'w1');
-	var w2 = window.open(collection[idx02], 'w2');
-	var w3 = window.open(collection[idx03], 'w3');
-  var w4 = window.open(collection[idx04], 'w4');
-  var w5 = window.open(collection[idx05], 'w5');    
-	var testInterval = setInterval(function(){
-	idx01 = Math.floor(Math.random() * collection.length);
-	idx02 = Math.floor(Math.random() * collection.length);
-	idx03 = Math.floor(Math.random() * collection.length);
-	w1.location.replace(collection[idx01]);
-	w2.location.replace(collection[idx02]);
-	w3.location.replace(collection[idx03]);
-	kmjg = Math.random() * 20;
-	}, kmjg*1000)
 }
