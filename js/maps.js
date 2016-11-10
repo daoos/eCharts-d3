@@ -25,7 +25,7 @@ $(function(){
       var rdm5 = Math.floor(Math.random() * kmsb.length);
       message = [xq[rdm1], status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
       onMessages(message);
-    }, 0);
+    }, 250);
     }, 10000)
 })
 
