@@ -1,10 +1,10 @@
 var typeName = "android";
 var str = '';
 var top10 = [], data = [], geoCoordMap = {}, province_data = [], city_data = [];
-var angel = [], members = [], dot_geo = {}, convert = [], xq = [], success_rate = [], dataXQ = [], dataDT = [];
+var angel = [], members = [], dot_geo = {}, convert = [], xq = [], success_rate = [], dataXQ = [], dataDT = [], opens = [];
 var unit_id, xiaoqu_name, total_counts, avg_sigal, xiaoqu, signal, open_status, network, open_door, city_code, city_name, province, pl, cl, base_size, factor;
 var z = 1, j = 1, lat = 0, lng = 0, s_counts = 9501, f_counts = 499, t0 = 0, tt = 0;
-var count_base = 15000, signal_base = -90, a = 36, r = 1.2, success_counts = 0, fail_counts = 0, success_base = 75;
+var count_base = 15000, signal_base = -90, a = 24, r = 0.6, success_counts = 0, fail_counts = 0, success_base = 75;
 var interval = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 
 $(function(){
@@ -26,7 +26,7 @@ $(function(){
       message = [xq[rdm1], status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
       onMessages(message);
     }, 250);
-    }, 10000)
+    }, 5000)
 })
 
 function getUnitArea(){
@@ -213,8 +213,16 @@ function onMessages(arr) {
                   province_data[j].value[4] = (old_signal + data[j].value[1])/2;
               }
           }
+          // if(opens.length < 5) {
+            for(var i=0, n=members.length; i<n; i++) {
+              if(members[i][0] == unit_id) {
+                  var xqdata = members[i];
+                  opens.push(xqdata);
+              }
+            }
+          //}
           //当有数据传进来时动态展示，这就是你要的可视化~
-          line_effect(unit_id);
+          //line_effect(unit_id);
           re_loadEChart(unit_id, xiaoqu_name, open_status, signal, network, open_door, DT, z);
           //display_data();
           if(z == 1) {
@@ -312,22 +320,22 @@ function re_loadEChart(unit_id, xiaoqu_name, open_status, signal, network, open_
 		  //<img src="http://i.niupic.com/images/2016/10/27/xrwMjL.jpg">
 		  str = '<tr class="success"><td>'+xiaoqu_name+'</td><td>'+getNowFormatDate()+'</td><td>'+signal+'</td><td>'+open_door+'</td><td>'+DT+'</td><td>'+network+'</td><td>'+"成功！"+'</td></tr>'+str;
 		  success_counts += 1;
-		  for(var i=0, n=success_rate.length; i<n; i++){
-			  if(unit_id == success_rate[i].name) {
-				  success_rate[i].value[0] += 1;
-			  }
-		  }
+		  // for(var i=0, n=success_rate.length; i<n; i++){
+			 //  if(unit_id == success_rate[i].name) {
+				//   success_rate[i].value[0] += 1;
+			 //  }
+		  // }
 	}
 	else {
 		  open_status = '失败';
 		  //<img src="http://i.niupic.com/images/2016/10/27/xrwMjL.jpg">
 		  str = '<tr class="fail"><td>'+xiaoqu_name+'</td><td>'+getNowFormatDate()+'</td><td>'+signal+'</td><td>'+open_door+'</td><td>'+DT+'</td><td>'+network+'</td><td>'+"失败！"+'</td></tr>'+str;
 		  fail_counts += 1;
-		  for(var i=0, n=success_rate.length; i<n; i++){
-			  if(unit_id == success_rate[i].name) {
-				  success_rate[i].value[1] += 1;
-			  }
-		  }
+		  // for(var i=0, n=success_rate.length; i<n; i++){
+			 //  if(unit_id == success_rate[i].name) {
+				//   success_rate[i].value[1] += 1;
+			 //  }
+		  // }
 	}
     //将开门数据放入数组 dataXQ的格式 dataXQ = {[1,-55,"wifi","摇一摇","XIAOMI#MUI4",1],...}
     var elmt = [z, signal, network, open_door, open_status];
@@ -544,30 +552,53 @@ function loadEChart(data, geoCoordMap) {
     //随机选择一种颜色
     var color = ['#fff7bc', '#fec44f', '#d95f0e', '#f03b20', '#dd1c77', 'yellow', 'yellow', 'yellow', 'blue']
     var i = Math.floor(Math.random() * 6);
-      var opening = {
-          type: 'lines',
-          zlevel: 1,
-          effect: {
-              show: true,
-              period: 1.8,
-              //constantSpeed:200,
-              trailLength: 0,
-              //symbol: planePath,
-              //symbolSize: 1
-          },
-          lineStyle: {
-              normal: {
-                  color: color[i],
-                  width: 1,
-                  opacity: 0.1,
-                  //curveness: 0.3
-              }
-          },
-          data: convert
-      };
-      if($.isEmptyObject(convert) != true) {
-        series.push(opening);
-        $("#main").unbind("click");
+    var opening = {
+        type: 'lines',
+        zlevel: 1,
+        effect: {
+            show: true,
+            period: 1.8,
+            //constantSpeed:200,
+            trailLength: 0,
+            //symbol: planePath,
+            //symbolSize: 1
+        },
+        lineStyle: {
+            normal: {
+                color: color[i],
+                width: 1,
+                opacity: 0.1,
+                //curveness: 0.3
+            }
+        },
+        data: convert
+    };
+    if($.isEmptyObject(opens) != true) {
+      $("#main").unbind("click");
+      //series.push(opening);
+      opens.forEach(function (item, i) {
+        series.push({
+            type: 'lines',
+            zlevel: 1,
+            effect: {
+                show: true,
+                period: 1.8,
+                //constantSpeed:200,
+                trailLength: 0,
+                //symbol: planePath,
+                //symbolSize: 1
+            },
+            lineStyle: {
+                normal: {
+                    color: color[i],
+                    width: 1,
+                    opacity: 0.1,
+                    //curveness: 0.3
+                }
+            },
+            data: convertData02(item[1], dot_geo)
+        })
+      });
       myChart.setOption({
         title: {
             text: '小区开门信号强度',
@@ -627,6 +658,7 @@ function loadEChart(data, geoCoordMap) {
         if(series.length > 1) {
             series = series.slice(0,1);
         }
+        opens = opens.slice(opens.length/2, opens.length);
     }, 2000)
 
      //如果升级jQuery因为toggle被duplicate而不能使用的话，使用该代码
