@@ -25,7 +25,7 @@ $(function(){
       var rdm5 = Math.floor(Math.random() * kmsb.length);
       message = [xq[rdm1], status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
       onMessages(message);
-    }, 0);
+    }, 250);
     }, 10000)
 })
 
@@ -453,14 +453,6 @@ function loadEChart(data, geoCoordMap) {
       animationEasing: 'cubicInOut',
       animationDurationUpdate: 1000,
       animationEasingUpdate: 'cubicInOut',
-       title: {
-            text: '小区开门信号强度',
-            left: 'right',
-            textStyle: {
-                color: '#fff',
-                fontSize:12.5
-            }
-        },
       geo: {
     		center:[110.601265,33.02564],
             map: 'china',
@@ -575,10 +567,17 @@ function loadEChart(data, geoCoordMap) {
       };
       if($.isEmptyObject(convert) != true) {
         series.push(opening);
-        $("#main").unbind("dblclick");
         $("#main").unbind("click");
       myChart.setOption({
-                //当有数据产生时将地图放大并将中心移动到指定位置
+        title: {
+            text: '小区开门信号强度',
+            left: 'right',
+            textStyle: {
+                color: '#fff',
+                fontSize:12.5
+            }
+        },
+        //当有数据产生时将地图放大并将中心移动到指定位置
         geo: {
           center:[110.601265,28.02564],
           zoom:1.5,
@@ -605,14 +604,17 @@ function loadEChart(data, geoCoordMap) {
                 pieces: [{
                     gt: -120,
                     lte: -105,
+                    label:'弱',
                     color: '#fc8d59'
                 }, {
                     gt: -105,
                     lte: -85,
+                    label:'中',
                     color: '#ffffbf'
                 }, {
                     gt: -85,
                     lte: -70,
+                    label:'强',
                     color: '#91cf60'
                 }],
                 outOfRange: {
@@ -627,102 +629,103 @@ function loadEChart(data, geoCoordMap) {
         }
     }, 2000)
 
-     //双击和单击对应不同事件
-  $("#main").dblclick(function() {
-    clearInterval(checking);
-        if(series.length > 1) {
-            series = series.slice(0,1);
-        }
-    myChart.setOption({
-      geo: {
-          //center:[110.601265,33.02564],
-              //map: 'china',
-              zoom: 1.2,
-              roam: true,
-//              itemStyle: {
-//                  normal: {
-//                      areaColor: '#000000',
-//                      borderColor: '#1E90FF'
-//                  },
-//                  emphasis: {
-//                      areaColor: '#FFFAFA',
-//                      opacity: 0.2
-//                  }
-//              }
-          },  
-        visualMap: {
-          show:false,
-        },    
-        series: [{
-            data: province_data,
-            rippleEffect: {
-                      //brushType: ''
-                    brushType: 'stroke'
-                  },
-                  itemStyle: {
-                      normal: {
-                          color: '#f7f7f7',
-                          shadowBlur: 10,
-                          shadowColor: '#333',
-                          opacity: 0.6
-                      }
-                  }
-          }]
-    })
-  });
+     //如果升级jQuery因为toggle被duplicate而不能使用的话，使用该代码
     $("#main").click(function(){
       if(tt == 0) {
-         myChart.setOption({
-           visualMap: {
-             show:false,
-                   top: 30,
-                   right: 20,
-                   textStyle: {
-                       color: '#ffffff',
-                       fontWeight: 'bolder',
-                     fontSize: 15,
-                   },
-                   pieces: [{
+        myChart.setOption({
+          visualMap: {
+            show:false,
+                  top: 30,
+                  right: 20,
+                  textStyle: {
+                      color: '#ffffff',
+                      fontWeight: 'bolder',
+                    fontSize: 15,
+                  },
+                  pieces: [{
                     gt: -120,
                     lte: -105,
+                    label:'弱',
                     color: '#fc8d59'
                 }, {
                     gt: -105,
                     lte: -85,
+                    label:'中',
                     color: '#ffffbf'
                 }, {
                     gt: -85,
                     lte: -70,
+                    label:'强',
                     color: '#91cf60'
                 }],
-                   outOfRange: {
-                       color: 'red'
-                   }
-               },
-             series: [{
-                 data: city_data,
-                 rippleEffect: {
-                         brushType: 'stroke'
-                       },
-               }]
-         })
-         tt = 1;
-       } else {
-         myChart.setOption({
-               visualMap: {
-               show:true,
-             }, 
-             series: [{
-               data: convertData(data, geoCoordMap),
-               rippleEffect: {
-                   brushType: 'stroke'
-                       },
-               }]
-         })
-         tt = 0;
-       }
-    })
-
+                  outOfRange: {
+                      color: 'red'
+                  }
+              },
+            series: [{
+                data: city_data,
+                rippleEffect: {
+                        brushType: 'stroke'
+                      },
+              }]
+        })
+        tt = 1;
+      } else if(tt == 1){
+        myChart.setOption({
+              visualMap: {
+              show:true,
+            }, 
+            series: [{
+              data: convertData(data, geoCoordMap),
+              rippleEffect: {
+                  brushType: 'stroke'
+                      },
+              }]
+        })
+        tt = 2;
+      } else {
+     if(series.length > 1) {
+              series = series.slice(0,1);
+          }
+      myChart.setOption({
+        geo: {
+            //center:[110.601265,33.02564],
+                //map: 'china',
+                zoom: 1.2,
+                roam: true,
+//                    itemStyle: {
+//                        normal: {
+//                            areaColor: '#000000',
+//                            borderColor: '#1E90FF'
+//                        },
+//                        emphasis: {
+//                            areaColor: '#FFFAFA',
+//                            opacity: 0.2
+//                        }
+//                    }
+            },  
+          visualMap: {
+            show:false,
+          },    
+          series: [{
+              data: province_data,
+              rippleEffect: {
+                        //brushType: ''
+                      brushType: 'stroke'
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: '#f7f7f7',
+                            shadowBlur: 10,
+                            shadowColor: '#333',
+                            opacity: 0.6
+                        }
+                    }
+            }]
+      })
+        tt = 0;
+      }
+  })
     if (option && typeof option === "object") {
         myChart.setOption(option, true);
     }   
