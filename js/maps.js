@@ -1,11 +1,10 @@
 var typeName = "android";
 var str = '';
 var top10 = [], data = [], geoCoordMap = {}, province_data = [], city_data = [];
-var angel = [], members = [], dot_geo = {}, convert = [], xq = [], success_rate = [], dataXQ = [], dataDT = [], opens = [];
+var angel = [], members = [], dot_geo = {}, convert = [], xq = [], success_rate = [], dataXQ = [], opens = [];
 var unit_id, xiaoqu_name, total_counts, avg_sigal, xiaoqu, signal, open_status, network, open_door, city_code, city_name, province, pl, cl, base_size, factor;
-var z = 1, j = 1, lat = 0, lng = 0, s_counts = 9501, f_counts = 499, t0 = 0, tt = 0;
+var z = 1, j = 1, lat = 0, lng = 0, t0 = 0, tt = 0;
 var count_base = 15000, signal_base = -90, a = 24, r = 0.6, success_counts = 0, fail_counts = 0, success_base = 75;
-var interval = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 
 $(function(){
     getUnitArea();
@@ -14,10 +13,10 @@ $(function(){
       var interval01 = setInterval(function() {
       var message = [];
       var signal = Math.floor(Math.random() * 50 - 120);
-      var kmfs = ['1', '2', '3', '4'];
+      var kmfs = ['1', '2', '3', '4', '1'];
       var kmwl = ['1', '2', '3', '4', '1', '1'];
       var status = ['1', '2', '3', '4', '5', '6', '7', '6', '7', '6', '7', '6', '7', '6', '7', '6', '7'];
-      var kmsb = ['联想 新网9 128G', 'KUPAI R7 64G', 'BLACKBERRY 64G', '苹果 iPhone 7 32GB', '三星 Galaxy S7 Edge 32G', '华为 P9全网通高配版', 'vivo X7 Plus', '苹果 iPhone 6s Plus', 'OPPO R9s全网通', '三星Galaxy C7', '魅族 魅蓝Note3高配版'];
+      var kmsb = ['联想 新网9 128G', 'KUPAI R7 64G', 'BLACKBERRY 64G', '苹果 iPhone 7 32GB', 'iPhone 6s 32GB', 'iPhone 6splus 128GB', '三星 Galaxy S7 Edge 32G', '华为 P9全网通高配版', 'vivo X7 Plus', '苹果 iPhone 6s Plus', 'OPPO R9s全网通', '三星Galaxy C7', '魅族 魅蓝Note3高配版'];
       var rdm1 = Math.floor(Math.random() * xq.length);
       var rdm2 = Math.floor(Math.random() * kmfs.length);
       var rdm3 = Math.floor(Math.random() * kmwl.length);
@@ -25,8 +24,8 @@ $(function(){
       var rdm5 = Math.floor(Math.random() * kmsb.length);
       message = [xq[rdm1], status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
       onMessages(message);
-    }, 250);
-    }, 5000)
+    }, 1000);
+    }, 10000)
 })
 
 function getUnitArea(){
@@ -35,7 +34,6 @@ function getUnitArea(){
         dataType:'json',
         success: function(result){
         	//获取基础数据，小区id,小区名称等
-
             for(var i=0, n=result.length; i<n; i++) {
                 unit_id = result[i].unit_id;
                 xiaoqu_name = result[i].name;
@@ -96,9 +94,6 @@ function create_xiaoqu(unit_id, xiaoqu_name, lat, lng, city_code, city_name, pro
     xiaoqu = {name: unit_id, value: [total_counts, avg_sigal]};
     data.push(xiaoqu);
     geoCoordMap[unit_id] = [lat, lng, xiaoqu_name, province, city_name, city_code];
-    //试图创建另外一个数组用于存放小区id及其对应的开门成功和失败次数，然而并没有成功，总是出现undefined so sad
-    var openCounts = {name: unit_id, value: [s_counts, f_counts]};
-    success_rate.push(openCounts);
 }
 
 //创建省份数组 for循环时要避免多次重复放入数据，因此引入p变量
@@ -107,7 +102,7 @@ function create_province(lat, lng, province, total_counts, avg_sigal, pl) {
 	for(var i=0; i<pl; i++) {
 		//有则改之，无则加勉
 		if(province == province_data[i].name) {
-            //如果数组中存在该省份，除了修改改省份对应的数据，还需修改p变量，这样就不会重复执行将省份放入数组中
+      //如果数组中存在该省份，除了修改改省份对应的数据，还需修改p变量，这样就不会重复执行将省份放入数组中
 			p = 1;
 			var old_counts = province_data[i].value[3];
 			var old_signal = province_data[i].value[4];
@@ -180,17 +175,6 @@ function onMessages(arr) {
   network = arr[2];
   open_door = arr[4];
   DT = arr[5].toUpperCase();
-  //若设备不存在列表中则将开门设备放入dataDT数组
-  var n = dataDT.length;
-  var c = 0;
-  for(var i=0; i<n; i++){
-      if (DT == dataDT[i]) {
-    	  c = 1;
-      }
-  }
-  if(n == 0 || c == 0) {
-	  dataDT.push(DT);
-  }
   //data 的格式：data:[{name:'unit_id', value:[total_counts. avg_signal]},...]
   for(var i=0, n=data.length; i<n; i++) {
       var nvalue = data[i].name;
@@ -293,7 +277,6 @@ function getNowFormatDate() {
 
 //生成展示数据的表格并在前端展示
 function re_loadEChart(unit_id, xiaoqu_name, open_status, signal, network, open_door, DT, z) {
-	//var table02_head = '<table style="width:100%; color:#1E90FF" id="display-detail-data"><caption>智能小区实时开门数据</caption><tr class="tr1" style="color:#1E90FF"><td style="width:23%; word-wrap: break-word;">小区名称</td><td>开门时间</td><td>信号强度</td><td>开门方式</td><td style="width:26%; word-wrap: break-word;">开门设备</td><td>网络状态</td><td>开门状态</td></tr>';
     var table02_head = '<table style="width:100%; color:#1E90FF" id="display-detail-data"><tr class="tr1" style="color:#1E90FF"><td style="width:11%; word-wrap: break-word;">小区名称</td><td>开门时间</td><td>信号强度</td><td>开门方式</td><td style="width:28%; word-wrap: break-word;">开门设备</td><td>网络状态</td><td>开门状态</td></tr>';
     var table_foot = '</table>';
     if(network === '1') {
@@ -317,25 +300,13 @@ function re_loadEChart(unit_id, xiaoqu_name, open_status, signal, network, open_
     }
 	if(open_status === '6' || open_status === '7') {
 		  open_status = '成功';
-		  //<img src="http://i.niupic.com/images/2016/10/27/xrwMjL.jpg">
 		  str = '<tr class="success"><td>'+xiaoqu_name+'</td><td>'+getNowFormatDate()+'</td><td>'+signal+'</td><td>'+open_door+'</td><td>'+DT+'</td><td>'+network+'</td><td>'+"成功！"+'</td></tr>'+str;
 		  success_counts += 1;
-		  // for(var i=0, n=success_rate.length; i<n; i++){
-			 //  if(unit_id == success_rate[i].name) {
-				//   success_rate[i].value[0] += 1;
-			 //  }
-		  // }
 	}
 	else {
 		  open_status = '失败';
-		  //<img src="http://i.niupic.com/images/2016/10/27/xrwMjL.jpg">
 		  str = '<tr class="fail"><td>'+xiaoqu_name+'</td><td>'+getNowFormatDate()+'</td><td>'+signal+'</td><td>'+open_door+'</td><td>'+DT+'</td><td>'+network+'</td><td>'+"失败！"+'</td></tr>'+str;
 		  fail_counts += 1;
-		  // for(var i=0, n=success_rate.length; i<n; i++){
-			 //  if(unit_id == success_rate[i].name) {
-				//   success_rate[i].value[1] += 1;
-			 //  }
-		  // }
 	}
     //将开门数据放入数组 dataXQ的格式 dataXQ = {[1,-55,"wifi","摇一摇","XIAOMI#MUI4",1],...}
     var elmt = [z, signal, network, open_door, open_status];
@@ -354,14 +325,14 @@ function re_loadEChart(unit_id, xiaoqu_name, open_status, signal, network, open_
 
 //同样生成展示前10名的表格并在前端展示
 function display_data() {
-	var str = '';
+	  var str = '';
     var table_foot = '</table>';
     var table01_head = '<table style="width:100%; color:#1E90FF" id="display-sum-data"><caption>智能小区开门总次数排行榜</caption><tr><th style="width:40%; word-wrap: break-word;">小区名称</th><th>累计开门次数</th><th>平均信号强度</th></tr>'; //<th>开门成功率</th>
-	var s_rate, s, f;
-	top10 = data.sort(function(a,b) {
-		return b.value[0] - a.value[0];
-	}).slice(0,10);
-	for(var i=0, n=top10.length; i<n; i++) {
+	  var s_rate, s, f;
+	  top10 = data.sort(function(a,b) {
+  		return b.value[0] - a.value[0];
+  	}).slice(0,10);
+	  for(var i=0, n=top10.length; i<n; i++) {
 		xiaoqu_name = geoCoordMap[top10[i].name][2];
 		total_counts = Math.round(top10[i].value[0]);
 		avg_signal = Math.round(top10[i].value[1]*100)/100;
@@ -380,14 +351,14 @@ function display_data() {
 }
 
 function loadEChart(data, geoCoordMap) {
-	//使用echarts3.0版本的做法
+	  //使用echarts3.0版本的做法
     var dom = document.getElementById("main");
     var myChart = echarts.init(dom);
     //使用effectScatter展示各个省份的数据，后面重新加载图表的时候也没有更改这种类型
     var series = [];
     var app = {};
     option = null;
-	   series.push(
+	  series.push(
         {
             name: 'xiqoqu',
             type: 'effectScatter',
@@ -454,7 +425,7 @@ function loadEChart(data, geoCoordMap) {
             zlevel: 1
         }
 	);
-    option = {
+  option = {
       backgroundColor: '#000000',
       animation: true,
       animationDuration: 1000,
@@ -654,11 +625,14 @@ function loadEChart(data, geoCoordMap) {
             },
         series: series
       });
+    }
+    //如果series里面的元素不止一个，则删除后面push进去的元素，因为每隔2秒钟就会重新检测到opens数组不为空，又会重新把数据push到series中
+      if(series.length > 1) {
+          series = series.slice(0,1);
       }
-        if(series.length > 1) {
-            series = series.slice(0,1);
-        }
-        opens = opens.slice(opens.length/2, opens.length);
+    //同样道理，避免一直在打圈圈，每过2秒钟就将opens数组中的元素减半，如果每次只留5个元素打圈圈，也可以选择第二种方法
+      opens = opens.slice(opens.length/2, opens.length);
+    //opens = opens.slice(1, opens.length);
     }, 2000)
 
      //如果升级jQuery因为toggle被duplicate而不能使用的话，使用该代码
