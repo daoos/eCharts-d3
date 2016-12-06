@@ -30,7 +30,7 @@ $(function(){
 
 function getUnitArea(){
     $.ajax({
-        url: 'location.json',
+        url: 'json/location.json',
         dataType:'json',
         success: function(result){
         	//获取基础数据，小区id,小区名称等
