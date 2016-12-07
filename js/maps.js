@@ -378,13 +378,44 @@ var width = window.innerWidth;
 var height = window.innerHeight;
 
 var svg = d3.select("#main").append("svg")
-  .attr("xmlns","http://www.w3.org/2000/svg")
-  .attr("xmlns:xlink","http://www.w3.org/1999/xlink")
+  // .attr("xmlns","http://www.w3.org/2000/svg")
+  // .attr("xmlns:xlink","http://www.w3.org/1999/xlink")
   .attr("width", width)
   .attr("height", height);
 
 var chinaMap = svg.append('g')
   .attr("id","chinaMap");
+
+var w1 = $("#chart03").width();
+var h1 = $("#chart03").height();
+
+var svg = d3.select("#chart03").append("svg")
+  .attr("width", w1)
+  .attr("height", h1);
+
+var testMap = svg.append('g')
+  .attr("id","testMap");
+
+svg.append("defs")
+  .append("g")
+  .attr("id", "shapes")
+  .append("circle")
+  .attr("cx","50")
+  .attr("cy","50")
+  .attr("r","30")
+  .style("fill","rgba(30,144,255,.23)");
+
+testMap.append("use")
+  .attr("xlink:href", "#shapes")
+  .attr("x","0")
+  .attr("y","0");
+
+// testMap.append("rect")
+//   .attr("x",0)
+//   .attr("y",0)
+//   .attr("width",w1)
+//   .attr("height",h1)
+//   .attr("fill","rgba(30,144,255,.23");
 
 var projection = d3.geo.mercator()
   .center([104.7,30])
