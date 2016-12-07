@@ -3,160 +3,175 @@ var height = window.innerHeight;
 var basic = [];
 
 var zoom = d3.behavior.zoom()
-	.scaleExtent([1, 10])
-	.on("zoom", zoomed);
+    .scaleExtent([1, 10])
+    .on("zoom", zoomed);
 
 function zoomed() {
-	d3.select(this).attr("transform", 
-		"translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    d3.select(this).attr("transform", 
+        "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 }
 
 var drag = d3.behavior.drag()
-	.on("drag", dragmove); 
-				
-function dragmove(d) {	
-	console.log(d);
-	console.log(d3.event);
+    .on("drag", dragmove); 
+                
+function dragmove(d) {  
+    console.log(d);
+    console.log(d3.event);
 }
 
-var svg = d3.select("body").append("svg")
-	.attr("xmlns:xlink","http://www.w3.org/1999/xlink")
-	.attr("width", width)
-	.attr("height", height);
+var svg = d3.select("#map").append("svg")
+    .attr("xmlns","http://www.w3.org/2000/svg")
+    .attr("xmlns:xlink","http://www.w3.org/1999/xlink")
+    .attr("width", width)
+    .attr("height", height);
 
 var title = svg.append('g')
-	.append("a")
-	.attr("xlink:href", "http://www.wow666.top")
-	.append("text")
-	.attr("x",5)
-	.attr("y",35)
-	.style("font-size","1.3em")
-	.attr("fill","#fff")
-	.text("小区实时开门数据");
+    .append("a")
+    .attr("xlink:href", "http://www.wow666.top")
+    .append("text")
+    .attr("x",5)
+    .attr("y",35)
+    .style("font-size","1.3em")
+    .attr("fill","#fff")
+    .text("小区实时开门数据");
 
 var chinaMap = svg.append('g')
-	.attr("id","chinaMap");
-	// .call(zoom)
-	// .call(drag);
+    .attr("id","chinaMap");
+    // .call(zoom)
+    // .call(drag);
 
 var graphOne = svg.append('g')
-	// .append('rect')
-	// .attr("width", width/3-15)
-	// .attr("height",height/3)
-	.attr("transform", "translate(" + width*2/3 + "," + 0 +")")
-	.append("svg")
-	.attr("width",width/3)
-	.attr("height",height/3)
-	.attr("id","graphOne");
+    // .append('rect')
+    // .attr("width", width/3-15)
+    // .attr("height",height/3)
+    .attr("transform", "translate(" + width*2/3 + "," + 0 +")");
+
+graphOne
+    .append("svg")
+    .attr("width",width/10)
+    .attr("height",height/3)
+    .attr("id","graphOne1");
+graphOne
+    .append("svg")
+    .attr("width",width/10)
+    .attr("height",height/3)
+    .attr("id","graphOne2");
+graphOne
+    .append("svg")
+    .attr("width",width/10)
+    .attr("height",height/3)
+    .attr("id","graphOne3");
 
 var graphTwo = svg.append('g')
-	.attr("transform", "translate(" + width*2/3 + "," + height*1/3 +")")
-	.append("svg")
-	.attr("width",width/3)
-	.attr("height",height/3)
-	.attr("id","graphTwo");
+    .attr("transform", "translate(" + width*2/3 + "," + height*1/3 +")")
+    .append("svg")
+    .attr("width",width/3)
+    .attr("height",height/3)
+    .attr("id","graphTwo");
 
 var graphThree = svg.append('g')
-	.attr("transform", "translate(" + width*2/3 + "," + height*2/3 +")")
-	.append("svg")
-	.attr("width",width/3)
-	.attr("height",height/3)
-	.attr("id","graphThree");
+    .attr("transform", "translate(" + width*2/3 + "," + height*2/3 +")")
+    .append("svg")
+    .attr("width",width/3)
+    .attr("height",height/3)
+    .attr("id","graphThree");
 
 var projection = d3.geo.mercator()
-	.center([104.7,38])
-	.scale(940)
-	.translate([width/3,height/2]);
+    .center([104.7,38])
+    .scale(940)
+    .translate([width/3,height/2]);
 
 var path = d3.geo.path()
-	.projection(projection);
+    .projection(projection);
 
 var defs = chinaMap.append('defs');
 
 var gaussian = defs.append('filter')
-	.attr('id','gaussian');
+    .attr('id','gaussian');
 
 gaussian.append('feGaussianBlur')
-	.attr('in', 'SourceGraphic')
-	.attr('stdDeviation', '0.5');
+    .attr('in', 'SourceGraphic')
+    .attr('stdDeviation', '0.5');
 
 d3.json("json/china.json",function(error, root){
-	if(error){
-		return console.error(error);
-	}
-	console.log(root)
+    if(error){
+        return console.error(error);
+    }
+    console.log(root)
 
-	var georoot = root;
-	//var georoot = topojson.feature(root, root.objects.china);
+    var georoot = root;
+    //var georoot = topojson.feature(root, root.objects.china);
 
-	var paths = chinaMap.append('g')
-		.selectAll("path")
-		.data(georoot.features)
-		.enter()
-		.append('path')
-		.attr({
-			class: 'province',
-			d: path
-		})
-		.style("fill", "none")
-		.style("stroke", "#00FFFF");
+    var paths = chinaMap.append('g')
+        .selectAll("path")
+        .data(georoot.features)
+        .enter()
+        .append('path')
+        .attr({
+            class: 'province',
+            d: path
+        })
+        .style("fill", "none")
+        .style("stroke", "#00FFFF");
 
-	var text = chinaMap.append('g')
-		.selectAll(".place-label")
-	    .data(georoot.features)
-	  	.enter()
-	  	.append("text")
-	    .attr("class", "place-label")
-	    .attr("transform", function(d) { 
-	    	return "translate(" + projection(d.properties.cp) + ")";
-	    })
-	    .attr("dy", ".35em")
-	    .text(function(d) { return d.properties.name; });
+    var text = chinaMap.append('g')
+        .selectAll(".place-label")
+        .data(georoot.features)
+        .enter()
+        .append("text")
+        .attr("class", "place-label")
+        .attr("transform", function(d) { 
+            return "translate(" + projection(d.properties.cp) + ")";
+        })
+        .attr("dy", ".35em")
+        .text(function(d) { return d.properties.name; });
 
-	addBasicData();
-	
-	addgraphOne();
-	addgraphTwo();
-	addgraphThree();
+    addBasicData();
+    
+    addgraphOne();
+    addgraphTwo();
+    addgraphThree();
 
-	test();
+    test();
 })
 
 function addBasicData() {
-	var color = d3.scale.category20();
-	// var a = d3.rgb(255,255,255),
-	// 	b = d3.rgb(255,255,0);
-	var myColor = d3.interpolateLab("#fc8d59","#ffffbf","#91cf60");
-	d3.json("json/location.json", function(error, root){
-		for(var i=0; i<root.length; i++){
-			root[i].loc = [root[i].lat, root[i].lng];
-		}
-		basic = root;
-		console.log(basic);
+    var color = d3.scale.category20();
+    // var a = d3.rgb(255,255,255),
+    //  b = d3.rgb(255,255,0);
+    var myColor = d3.interpolateLab("#fc8d59","#ffffbf","#91cf60");
+    d3.json("json/location.json", function(error, root){
+        for(var i=0; i<root.length; i++){
+            root[i].loc = [root[i].lat, root[i].lng];
+        }
+        basic = root;
+        console.log(basic);
 
-		var points = chinaMap.append('g')
-			.selectAll("circle")
-			.data(root)
-			.enter()
-			.append('circle')
-			.attr("class", "basic-data")
-			.attr("transform", function(d){
-				return "translate(" + projection(d.loc) + ")";
-			})
-			.attr("r",function(d,i){
-				return Math.floor(Math.random() * 2 + 1);
-			})
-			.style("fill",function(d,i){
-				var color = myColor(Math.random());
-				return color.toString();
-			})
-			.style("filter", "url(#" + gaussian.attr("id") + ")");
-	})
+        var points = chinaMap.append('g')
+            .selectAll("circle")
+            .data(root)
+            .enter()
+            .append('circle')
+            .attr("class", "basic-data")
+            .attr("transform", function(d){
+                return "translate(" + projection(d.loc) + ")";
+            })
+            .attr("r",function(d,i){
+                return Math.floor(Math.random() * 2 + 1);
+            })
+            .style("fill",function(d,i){
+                var color = myColor(Math.random());
+                return color.toString();
+            })
+            .style("filter", "url(#" + gaussian.attr("id") + ")");
+    })
 }
 
 function addgraphOne(){
-	var gauge1 = loadLiquidFillGauge("graphOne", 55);
-	// var config3 = liquidFillGaugeDefaultSettings();
+    //var gauge1 = loadLiquidFillGauge("graphOne1", 55);
+    //var gauge2 = loadLiquidFillGauge("graphOne2", 55);
+    //var gauge3 = loadLiquidFillGauge("graphOne3", 55);
+    // var config3 = liquidFillGaugeDefaultSettings();
  //    config3.textVertPosition = 0.8;
  //    config3.waveAnimateTime = 5000;
  //    config3.waveHeight = 0.15;
@@ -196,9 +211,9 @@ function loadLiquidFillGauge(elementId, value, config) {
     if(config == null) config = liquidFillGaugeDefaultSettings();
 
     var gauge = d3.select("#" + elementId);
-    var radius = Math.min(parseInt(gauge.attr("width")), parseInt(gauge.attr("height")))/3;
-    var locationX = parseInt(gauge.attr("width"))/12;
-    var locationY = parseInt(gauge.attr("height"))/12;
+    var radius = Math.min(parseInt(gauge.attr("width")), parseInt(gauge.attr("height")))/2;
+    var locationX = parseInt(gauge.attr("width"))/2 - radius;
+    var locationY = parseInt(gauge.attr("height"))/2 - radius;
     var fillPercent = Math.max(config.minValue, Math.min(config.maxValue, value))/config.maxValue;
 
     var waveHeightScale;
@@ -430,61 +445,61 @@ function loadLiquidFillGauge(elementId, value, config) {
 }
 
 function addgraphTwo(){
-	
+    
 }
 
 function addgraphThree(){
-	
+    
 }
 
 function test(){
-	var interval01 = setInterval(function() {
-		var message = [];
-		var signal = Math.floor(Math.random() * 50 - 120);
-		var kmfs = ['1', '2', '3', '4', '1'];
-		var kmwl = ['1', '2', '3', '4', '1', '1'];
-		var status = ['1', '2', '3', '4', '5', '6', '7', '6', '7', '6', '7', '6', '7', '6', '7', '6', '7'];
-		var kmsb = ['联想 新网9 128G', 'KUPAI R7 64G', 'BLACKBERRY 64G', '苹果 iPhone 7 32GB', 'iPhone 6s 32GB', 'iPhone 6splus 128GB', '三星 Galaxy S7 Edge 32G', '华为 P9全网通高配版', 'vivo X7 Plus', '苹果 iPhone 6s Plus', 'OPPO R9s全网通', '三星Galaxy C7', '魅族 魅蓝Note3高配版'];
-		var rdm1 = Math.floor(Math.random() * basic.length);
-		var rdm2 = Math.floor(Math.random() * kmfs.length);
-		var rdm3 = Math.floor(Math.random() * kmwl.length);
-		var rdm4 = Math.floor(Math.random() * status.length);
-		var rdm5 = Math.floor(Math.random() * kmsb.length);
-		message = [basic[rdm1].unit_id, status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
-		onMessages(message);
-	}, 300);
+    var interval01 = setInterval(function() {
+        var message = [];
+        var signal = Math.floor(Math.random() * 50 - 120);
+        var kmfs = ['1', '2', '3', '4', '1'];
+        var kmwl = ['1', '2', '3', '4', '1', '1'];
+        var status = ['1', '2', '3', '4', '5', '6', '7', '6', '7', '6', '7', '6', '7', '6', '7', '6', '7'];
+        var kmsb = ['联想 新网9 128G', 'KUPAI R7 64G', 'BLACKBERRY 64G', '苹果 iPhone 7 32GB', 'iPhone 6s 32GB', 'iPhone 6splus 128GB', '三星 Galaxy S7 Edge 32G', '华为 P9全网通高配版', 'vivo X7 Plus', '苹果 iPhone 6s Plus', 'OPPO R9s全网通', '三星Galaxy C7', '魅族 魅蓝Note3高配版'];
+        var rdm1 = Math.floor(Math.random() * basic.length);
+        var rdm2 = Math.floor(Math.random() * kmfs.length);
+        var rdm3 = Math.floor(Math.random() * kmwl.length);
+        var rdm4 = Math.floor(Math.random() * status.length);
+        var rdm5 = Math.floor(Math.random() * kmsb.length);
+        message = [basic[rdm1].unit_id, status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
+        onMessages(message);
+    }, 300);
 }
 
 function onMessages(arr) {
-	var unit_id = arr[0];
-	var point = [];
-	for(var i=1; i<basic.length; i++){
-		if(basic[i].unit_id === unit_id) {
-			point = basic[i].loc;
-		}
-	}
-	particle(point);
+    var unit_id = arr[0];
+    var point = [];
+    for(var i=1; i<basic.length; i++){
+        if(basic[i].unit_id === unit_id) {
+            point = basic[i].loc;
+        }
+    }
+    particle(point);
 }
 
 var i = 0;
 
 function particle(point) {
-	var m = projection(point);
-	if(m[0] && m[1]) {
-		chinaMap.insert("circle")
-		.attr("cx", m[0])
-		.attr("cy", m[1])
-		.attr("r", 1e-6)
-		.style("stroke-width", '0.03em')
-		.style("stroke", d3.hsl((i = (i + 1) % 360), 1, .5))
-		.style("stroke-opacity", 1)
-	  	.transition()
-	    .duration(2000)
-	    .ease(Math.sqrt)
-	    .attr("r", 85)
-	    .style("fill","none")
-	    .style("stroke-width", '0.1em')
-	    .style("stroke-opacity", 1e-6)
-	    .remove();
-	}
+    var m = projection(point);
+    if(m[0] && m[1]) {
+        chinaMap.insert("circle")
+        .attr("cx", m[0])
+        .attr("cy", m[1])
+        .attr("r", 1e-6)
+        .style("stroke-width", '0.03em')
+        .style("stroke", d3.hsl((i = (i + 1) % 360), 1, .5))
+        .style("stroke-opacity", 1)
+        .transition()
+        .duration(2000)
+        .ease(Math.sqrt)
+        .attr("r", 85)
+        .style("fill","none")
+        .style("stroke-width", '0.1em')
+        .style("stroke-opacity", 1e-6)
+        .remove();
+    }
 }

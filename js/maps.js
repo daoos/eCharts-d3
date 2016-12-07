@@ -24,8 +24,8 @@ $(function(){
       var rdm5 = Math.floor(Math.random() * kmsb.length);
       message = [xq[rdm1], status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
       onMessages(message);
-    }, 100);
-    }, 10000)
+    }, 300);
+    }, 1000)
 })
 
 function getUnitArea(){
@@ -52,7 +52,10 @@ function getUnitArea(){
                 create_dots(lat, lng, unit_id);
             }
             //然后加载百度echarts图表，其他图表在有数据传输过来时才生成
-            loadEChart(data, geoCoordMap);
+            //loadEChart(data, geoCoordMap);
+            console.log(data);
+            console.log(geoCoordMap);
+            loadD3(data, geoCoordMap);
         },
         error: function(){
             alert("加载数据异常！");
@@ -207,6 +210,7 @@ function onMessages(arr) {
           //}
           //当有数据传进来时动态展示，这就是你要的可视化~
           //line_effect(unit_id);
+          particle([lat,lng]);
           re_loadEChart(unit_id, xiaoqu_name, open_status, signal, network, open_door, DT, z);
           //display_data();
           if(z == 1) {
@@ -216,6 +220,29 @@ function onMessages(arr) {
       }
   }
   z++;
+}
+
+var i = 0;
+
+function particle(point) {
+    var m = projection(point);
+    if(m[0] && m[1]) {
+        chinaMap.insert("circle")
+        .attr("cx", m[0])
+        .attr("cy", m[1])
+        .attr("r", 1e-6)
+        .style("stroke-width", '0.03em')
+        .style("stroke", d3.hsl((i = (i + 1) % 360), 1, .5))
+        .style("stroke-opacity", 1)
+        .transition()
+        .duration(2000)
+        .ease(Math.sqrt)
+        .attr("r", 85)
+        .style("fill","none")
+        .style("stroke-width", '0.1em')
+        .style("stroke-opacity", 1e-6)
+        .remove();
+    }
 }
 
 function convertData02(data, dot_geo) {
@@ -257,18 +284,15 @@ function getNowFormatDate() {
     }
     if (strDate >= 0 && strDate <= 9) {
         strDate = "0" + strDate;
-    }
-    
+    }  
     var hour_time = date.getMinutes();
     if (hour_time >= 0 && hour_time <= 9) {
         hour_time = "0" + hour_time;
-    }
-    
+    } 
     var seconds_time = date.getSeconds();
     if (seconds_time >= 0 && seconds_time <= 9) {
         seconds_time = "0" + seconds_time;
-    }
-    
+    } 
     var currentdate = date.getHours() + seperator2 + hour_time
             + seperator2 + seconds_time;
     return currentdate;
@@ -348,6 +372,68 @@ function display_data() {
 	}
 	$("#chart01").html("");
 	$("#chart01").html(table01_head+str+table_foot);
+}
+
+var width = window.innerWidth;
+var height = window.innerHeight;
+
+var svg = d3.select("#main").append("svg")
+  .attr("xmlns","http://www.w3.org/2000/svg")
+  .attr("xmlns:xlink","http://www.w3.org/1999/xlink")
+  .attr("width", width)
+  .attr("height", height);
+
+var chinaMap = svg.append('g')
+  .attr("id","chinaMap");
+
+var projection = d3.geo.mercator()
+  .center([104.7,30])
+  .scale(1240)
+  .translate([width/2,height/2]);
+
+var path = d3.geo.path()
+  .projection(projection);
+
+function loadD3(data, geoCoordMap) {
+    d3.json("json/china.json",function(error, root){
+      if(error){
+          return console.error(error);
+      }
+      console.log(root)
+
+      var georoot = root;
+      //var georoot = topojson.feature(root, root.objects.china);
+
+      var paths = chinaMap.append('g')
+          .selectAll("path")
+          .data(georoot.features)
+          .enter()
+          .append('path')
+          .attr({
+              class: 'province',
+              d: path
+          })
+          .style("fill", "none")
+          .style("stroke", "#00FFFF");
+
+      var text = chinaMap.append('g')
+          .selectAll(".place-label")
+          .data(georoot.features)
+          .enter()
+          .append("text")
+          .attr("class", "place-label")
+          .attr("transform", function(d) { 
+              return "translate(" + projection(d.properties.cp) + ")";
+          })
+          .attr("dy", ".35em")
+          .text(function(d) { return d.properties.name; });
+
+      addBasicData(data, geoCoordMap);
+  })
+}
+
+function addBasicData(data, geoCoordMap) {
+
 }
 
 function loadEChart(data, geoCoordMap) {
