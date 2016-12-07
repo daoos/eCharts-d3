@@ -433,7 +433,25 @@ function loadD3(data, geoCoordMap) {
 }
 
 function addBasicData(data, geoCoordMap) {
-
+    var root = convertData(data, geoCoordMap);
+    var myColor = d3.interpolateLab("#fc8d59","#ffffbf","#91cf60");
+    var points = chinaMap.append('g')
+        .selectAll("circle")
+        .data(root)
+        .enter()
+        .append('circle')
+        .attr("class", "basic-data")
+        .attr("transform", function(d){
+            return "translate(" + projection([d.value[0],d.value[1]]) + ")";
+        })
+        .attr("r",function(d,i){
+            return d.value[6]/2500;
+        })
+        .style("fill",function(d,i){
+            var color = myColor(Math.random());
+            return color.toString();
+        })
+        //.style("filter", "url(#" + gaussian.attr("id") + ")");
 }
 
 function loadEChart(data, geoCoordMap) {
