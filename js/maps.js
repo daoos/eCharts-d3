@@ -232,7 +232,7 @@ function particle(point) {
           .attr("cx", m[0])
           .attr("cy", m[1])
           .attr("r", 1e-6)
-          .style("stroke-width", '0.03em')
+          .style("stroke-width", '0.04em')
           // .style("stroke", function(){
           //     var colors = color(Math.random());
           //     return colors.toString();
@@ -419,6 +419,62 @@ testMap.append("use")
   .attr("x","0")
   .attr("y","0");
 
+var w2 = $("#title").width();
+var h2 = $("#title").height();
+
+var svg2 = d3.select("#title").append("svg")
+  .attr("width", w2)
+  .attr("height", h2);
+
+var titleMap = svg2.append('g')
+  .attr("id", "titleMap");
+
+titleMap.append("text")
+  .attr("x",0)
+  .attr("y",20)
+  .style("font-size","1em")
+  .attr("fill","#fff")
+  .text("深圳零壹智能小区实时开门数据 信号强度");
+
+titleMap.append('circle')
+  .attr("cx",50)
+  .attr("cy",40)
+  .attr("r",10)
+  .style("fill","#d95f0e");
+
+titleMap.append("text")
+  .attr("x",65)
+  .attr("y",45)
+  .style("font-size","0.8em")
+  .attr("fill","#fff")
+  .text("强");
+
+titleMap.append('circle')
+  .attr("cx",100)
+  .attr("cy",40)
+  .attr("r",10)
+  .style("fill","#fec44f");
+
+titleMap.append("text")
+  .attr("x",115)
+  .attr("y",45)
+  .style("font-size","0.8em")
+  .attr("fill","#fff")
+  .text("中");
+
+titleMap.append('circle')
+  .attr("cx",150)
+  .attr("cy",40)
+  .attr("r",10)
+  .style("fill","#fff7bc");
+
+titleMap.append("text")
+  .attr("x",165)
+  .attr("y",45)
+  .style("font-size","0.8em")
+  .attr("fill","#fff")
+  .text("弱");
+
 // testMap.append("rect")
 //   .attr("x",0)
 //   .attr("y",0)
@@ -427,8 +483,8 @@ testMap.append("use")
 //   .attr("fill","rgba(30,144,255,.23");
 
 var projection = d3.geo.mercator()
-  .center([104.7,30])
-  .scale(1240)
+  .center([106.7,35])
+  .scale(1000)
   .translate([width/2,height/2]);
 
 var path = d3.geo.path()
@@ -493,7 +549,6 @@ function loadD3(data, geoCoordMap) {
 function addBasicData(data, geoCoordMap) {
     var root = convertData(data, geoCoordMap);
     console.log(root);
-    //var myColor = d3.interpolateLab("#fc8d59","#ffffbf","#91cf60");
     var points = chinaMap.append('g')
         .selectAll("circle")
         .data(root)
@@ -504,7 +559,7 @@ function addBasicData(data, geoCoordMap) {
             return "translate(" + projection([d.value[0],d.value[1]]) + ")";
         })
         .attr("r",function(d,i){
-            return d.value[6]/2500;
+            return d.value[6]/2000;
         })
         .style("fill",function(d,i){
             //var color = myColor(Math.random());
