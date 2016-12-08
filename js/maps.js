@@ -223,25 +223,30 @@ function onMessages(arr) {
 }
 
 var i = 0;
-
+var color = d3.scale.category20();
+//var color = d3.interpolateLab("#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f");
 function particle(point) {
     var m = projection(point);
     if(m[0] && m[1]) {
         chinaMap.insert("circle")
-        .attr("cx", m[0])
-        .attr("cy", m[1])
-        .attr("r", 1e-6)
-        .style("stroke-width", '0.03em')
-        .style("stroke", d3.hsl((i = (i + 1) % 360), 1, .5))
-        .style("stroke-opacity", 1)
-        .transition()
-        .duration(2000)
-        .ease(Math.sqrt)
-        .attr("r", 85)
-        .style("fill","none")
-        .style("stroke-width", '0.1em')
-        .style("stroke-opacity", 1e-6)
-        .remove();
+          .attr("cx", m[0])
+          .attr("cy", m[1])
+          .attr("r", 1e-6)
+          .style("stroke-width", '0.03em')
+          // .style("stroke", function(){
+          //     var colors = color(Math.random());
+          //     return colors.toString();
+          // })
+          .style("stroke", d3.hsl((i = (i + 20) % 360), 1, .5))
+          .style("stroke-opacity", 1)
+          .transition()
+          .duration(2000)
+          .ease(Math.sqrt)
+          .attr("r", 85)
+          .style("fill","none")
+          .style("stroke-width", '0.1em')
+          .style("stroke-opacity", 1e-6)
+          .remove();
     }
 }
 
@@ -377,6 +382,10 @@ function display_data() {
 var width = window.innerWidth;
 var height = window.innerHeight;
 
+var div = d3.select("#main").append('div')
+  .attr("class", "tooltip")
+  .style("opacity", 0);
+
 var svg = d3.select("#main").append("svg")
   // .attr("xmlns","http://www.w3.org/2000/svg")
   // .attr("xmlns:xlink","http://www.w3.org/1999/xlink")
@@ -389,14 +398,14 @@ var chinaMap = svg.append('g')
 var w1 = $("#chart03").width();
 var h1 = $("#chart03").height();
 
-var svg = d3.select("#chart03").append("svg")
+var svg1 = d3.select("#chart03").append("svg")
   .attr("width", w1)
   .attr("height", h1);
 
-var testMap = svg.append('g')
+var testMap = svg1.append('g')
   .attr("id","testMap");
 
-svg.append("defs")
+svg1.append("defs")
   .append("g")
   .attr("id", "shapes")
   .append("circle")
@@ -424,6 +433,11 @@ var projection = d3.geo.mercator()
 
 var path = d3.geo.path()
   .projection(projection);
+
+var scale = d3.scale.linear();
+
+scale.domain([-120,-90,-60])
+  .range(["#fff7bc", "#fec44f", "#d95f0e"]);
 
 function loadD3(data, geoCoordMap) {
     d3.json("json/china.json",function(error, root){
@@ -461,11 +475,25 @@ function loadD3(data, geoCoordMap) {
 
       addBasicData(data, geoCoordMap);
   })
+    // zoom and pan
+  var zoom = d3.behavior.zoom()
+      .on("zoom",function() {
+          chinaMap.attr("transform","translate("+ 
+              d3.event.translate.join(",")+")scale("+d3.event.scale+")");
+          chinaMap.selectAll("circle")
+              .attr("d", path.projection(projection));
+          chinaMap.selectAll("path")  
+              .attr("d", path.projection(projection)); 
+
+    });
+
+  svg.call(zoom)
 }
 
 function addBasicData(data, geoCoordMap) {
     var root = convertData(data, geoCoordMap);
-    var myColor = d3.interpolateLab("#fc8d59","#ffffbf","#91cf60");
+    console.log(root);
+    //var myColor = d3.interpolateLab("#fc8d59","#ffffbf","#91cf60");
     var points = chinaMap.append('g')
         .selectAll("circle")
         .data(root)
@@ -479,10 +507,57 @@ function addBasicData(data, geoCoordMap) {
             return d.value[6]/2500;
         })
         .style("fill",function(d,i){
-            var color = myColor(Math.random());
+            //var color = myColor(Math.random());
+            var color = scale(d.value[7]);
             return color.toString();
         })
+        .style("stroke","#fff")
+        .style("cursor","pointer")
         //.style("filter", "url(#" + gaussian.attr("id") + ")");
+        .on("mouseover", function(d,i){
+          div.transition()
+            .duration(200)
+            .style("opacity",1);
+          div.html(function(){
+            var mingchen = d.value[2];
+            var tip = '';
+            var kaimen, xinhao, stat, txt;
+            if (d.value.length == 6) {
+                tip = '省份:';
+                stat = d.value[5];
+                kaimen = Math.round(d.value[3]);
+                xinhao = Math.round(d.value[4]);
+                txt = '小区数量';
+            }
+            else if (d.value.length == 7) {
+                tip = '市区:';
+                stat = d.value[6];
+                kaimen = Math.round(d.value[4]);
+                xinhao = Math.round(d.value[5]);
+                txt = '小区数量';
+            }
+            else {
+                tip = '小区:';
+                stat = d.value[3] + ' ' + d.value[4];
+                kaimen = Math.round(d.value[6]);
+                xinhao = Math.round(d.value[7]);
+                txt = '所在地区';
+            }
+            return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 12px;padding-bottom: 4px;margin-bottom: 4px; color:#fff">'
+                    + tip + ' ' + mingchen
+                    + '</div><div style="color:#fff">'
+                    + txt + '：' + stat + '<br>'
+                    + '累计开门次数' + '：' + kaimen + '<br>'
+                    + '平均信号强度' + '：' + xinhao + '</div>';
+          })
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 70) + "px");
+        })
+        .on("mouseout", function(d,i){
+          div.transition()
+            .duration(500)
+            .style("opacity", 0)
+        });
 }
 
 function loadEChart(data, geoCoordMap) {
