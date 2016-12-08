@@ -55,6 +55,7 @@ function getUnitArea(){
             //loadEChart(data, geoCoordMap);
             console.log(data);
             console.log(geoCoordMap);
+            //尝试用d3来画图吧
             loadD3(data, geoCoordMap);
         },
         error: function(){
@@ -210,7 +211,9 @@ function onMessages(arr) {
           //}
           //当有数据传进来时动态展示，这就是你要的可视化~
           //line_effect(unit_id);
+          //实现打圈圈的功能
           particle([lat,lng]);
+
           re_loadEChart(unit_id, xiaoqu_name, open_status, signal, network, open_door, DT, z);
           //display_data();
           if(z == 1) {
@@ -220,34 +223,6 @@ function onMessages(arr) {
       }
   }
   z++;
-}
-
-var i = 0;
-var color = d3.scale.category20();
-//var color = d3.interpolateLab("#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f");
-function particle(point) {
-    var m = projection(point);
-    if(m[0] && m[1]) {
-        chinaMap.insert("circle")
-          .attr("cx", m[0])
-          .attr("cy", m[1])
-          .attr("r", 1e-6)
-          .style("stroke-width", '0.04em')
-          // .style("stroke", function(){
-          //     var colors = color(Math.random());
-          //     return colors.toString();
-          // })
-          .style("stroke", d3.hsl((i = (i + 20) % 360), 1, .5))
-          .style("stroke-opacity", 1)
-          .transition()
-          .duration(2000)
-          .ease(Math.sqrt)
-          .attr("r", 85)
-          .style("fill","none")
-          .style("stroke-width", '0.1em')
-          .style("stroke-opacity", 1e-6)
-          .remove();
-    }
 }
 
 function convertData02(data, dot_geo) {
@@ -377,6 +352,36 @@ function display_data() {
 	}
 	$("#chart01").html("");
 	$("#chart01").html(table01_head+str+table_foot);
+}
+
+
+//到loadEchart()函数为止，都是用d3写出来的哦，是不是很棒。
+var i = 0;
+var color = d3.scale.category20();
+//var color = d3.interpolateLab("#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f");
+function particle(point) {
+    var m = projection(point);
+    if(m[0] && m[1]) {
+        chinaMap.insert("circle")
+          .attr("cx", m[0])
+          .attr("cy", m[1])
+          .attr("r", 1e-6)
+          .style("stroke-width", '0.04em')
+          // .style("stroke", function(){
+          //     var colors = color(Math.random());
+          //     return colors.toString();
+          // })
+          .style("stroke", d3.hsl((i = (i + 20) % 360), 1, .5))
+          .style("stroke-opacity", 1)
+          .transition()
+          .duration(2000)
+          .ease(Math.sqrt)
+          .attr("r", 85)
+          .style("fill","none")
+          .style("stroke-width", '0.1em')
+          .style("stroke-opacity", 1e-6)
+          .remove();
+    }
 }
 
 var width = window.innerWidth;
@@ -615,6 +620,8 @@ function addBasicData(data, geoCoordMap) {
         });
 }
 
+
+//下面这些是使用echarts画出来的
 function loadEChart(data, geoCoordMap) {
 	  //使用echarts3.0版本的做法
     var dom = document.getElementById("main");
