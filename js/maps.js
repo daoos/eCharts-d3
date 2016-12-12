@@ -5,8 +5,14 @@ var angel = [], members = [], dot_geo = {}, convert = [], xq = [], success_rate 
 var unit_id, xiaoqu_name, total_counts, avg_sigal, xiaoqu, signal, open_status, network, open_door, city_code, city_name, province, pl, cl, base_size, factor;
 var z = 1, j = 1, lat = 0, lng = 0, t0 = 0, tt = 0;
 var count_base = 15000, signal_base = -90, a = 24, r = 0.6, success_counts = 0, fail_counts = 0, success_base = 75;
+var OPEN_DOOR_MEESSAGE_NUM = 8;
 
 $(function(){
+    $("#chart00").draggable();
+    $("#chart01").draggable();
+    $("#chart02").draggable();
+    $("#chart03").draggable();
+    $("#title").draggable();
     getUnitArea();
     angels_division(a);
     setTimeout(function(){
@@ -22,11 +28,26 @@ $(function(){
       var rdm3 = Math.floor(Math.random() * kmwl.length);
       var rdm4 = Math.floor(Math.random() * status.length);
       var rdm5 = Math.floor(Math.random() * kmsb.length);
-      message = [xq[rdm1], status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
-      onMessages(message);
+      mes = [xq[rdm1], status[rdm4], kmwl[rdm3], signal, kmfs[rdm2], kmsb[rdm5]];
+      onMessages(mes);
     }, 300);
     }, 1000)
 })
+
+function addOpenDoorMesssageTable(message) {
+    var $openDoorMesssageTable = $("#openDoorMesssageTable");
+    //列表中显示的开门消息数量（不包括head tr）
+    var num = $openDoorMesssageTable.find("tr").length - 1;
+    if (num >= OPEN_DOOR_MEESSAGE_NUM) {
+        $openDoorMesssageTable.find("tr:eq(" + OPEN_DOOR_MEESSAGE_NUM + ")").remove();
+    }
+    $openDoorMesssageTable.find(":first").after(message);
+}
+
+function createOpenDoorMesssageTable() {
+    var openDoorMesssageTable = '<table style="width:100%; color:#1E90FF" id="openDoorMesssageTable"><tr class="tr1" style="color:#1E90FF"><td style="width:11%; word-wrap: break-word;">小区名称</td><td>开门时间</td><td>信号强度</td><td>开门方式</td><td style="width:28%; word-wrap: break-word;">开门设备</td><td>网络状态</td><td>开门状态</td></tr>';
+    $("#chart02").html(openDoorMesssageTable);
+}
 
 function getUnitArea(){
     $.ajax({
@@ -53,8 +74,8 @@ function getUnitArea(){
             }
             //然后加载百度echarts图表，其他图表在有数据传输过来时才生成
             //loadEChart(data, geoCoordMap);
-            console.log(data);
-            console.log(geoCoordMap);
+            // console.log(data);
+            // console.log(geoCoordMap);
             //尝试用d3来画图吧
             loadD3(data, geoCoordMap);
         },
@@ -217,6 +238,7 @@ function onMessages(arr) {
           re_loadEChart(unit_id, xiaoqu_name, open_status, signal, network, open_door, DT, z);
           //display_data();
           if(z == 1) {
+              createOpenDoorMesssageTable();
               loadGauge();
               loadParallel();
           }
@@ -315,8 +337,9 @@ function re_loadEChart(unit_id, xiaoqu_name, open_status, signal, network, open_
     //将开门数据放入数组 dataXQ的格式 dataXQ = {[1,-55,"wifi","摇一摇","XIAOMI#MUI4",1],...}
     var elmt = [z, signal, network, open_door, open_status];
     dataXQ.push(elmt);
-	  $("#chart02").html("");
-	  $("#chart02").html(table02_head+str+table_foot);
+	  // $("#chart02").html("");
+	  // $("#chart02").html(table02_head+str+table_foot);
+    addOpenDoorMesssageTable(str);
 	  var failClass = document.getElementsByClassName("fail");
 	  var successClass = document.getElementsByClassName("success");
 	  for(var i=0, n=failClass.length; i<n; i++) {
@@ -400,29 +423,29 @@ var svg = d3.select("#main").append("svg")
 var chinaMap = svg.append('g')
   .attr("id","chinaMap");
 
-var w1 = $("#chart03").width();
-var h1 = $("#chart03").height();
+// var w1 = $("#chart03").width();
+// var h1 = $("#chart03").height();
 
-var svg1 = d3.select("#chart03").append("svg")
-  .attr("width", w1)
-  .attr("height", h1);
+// var svg1 = d3.select("#chart03").append("svg")
+//   .attr("width", w1)
+//   .attr("height", h1);
 
-var testMap = svg1.append('g')
-  .attr("id","testMap");
+// var testMap = svg1.append('g')
+//   .attr("id","testMap");
 
-svg1.append("defs")
-  .append("g")
-  .attr("id", "shapes")
-  .append("circle")
-  .attr("cx","50")
-  .attr("cy","50")
-  .attr("r","30")
-  .style("fill","rgba(30,144,255,.23)");
+// svg1.append("defs")
+//   .append("g")
+//   .attr("id", "shapes")
+//   .append("circle")
+//   .attr("cx","50")
+//   .attr("cy","50")
+//   .attr("r","30")
+//   .style("fill","rgba(30,144,255,.23)");
 
-testMap.append("use")
-  .attr("xlink:href", "#shapes")
-  .attr("x","0")
-  .attr("y","0");
+// testMap.append("use")
+//   .attr("xlink:href", "#shapes")
+//   .attr("x","0")
+//   .attr("y","0");
 
 var w2 = $("#title").width();
 var h2 = $("#title").height();
@@ -497,7 +520,7 @@ var path = d3.geo.path()
 
 var scale = d3.scale.linear();
 
-scale.domain([-120,-90,-60])
+scale.domain([-120,-100,-80,-60])
   .range(["#fff7bc", "#fec44f", "#d95f0e"]);
 
 function loadD3(data, geoCoordMap) {
@@ -1231,4 +1254,5 @@ function loadParallel() {
 	if (option_parallel && typeof option_parallel === "object") {
 	    myChart_parallel.setOption(option_parallel, true);
 	}
+
 }
