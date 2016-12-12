@@ -14,7 +14,7 @@ $(function(){
     $("#chart03").draggable();
     $("#title").draggable();
     getUnitArea();
-    angels_division(a);
+    //angels_division(a);
     setTimeout(function(){
       var interval01 = setInterval(function() {
       var message = [];
@@ -35,13 +35,13 @@ $(function(){
 })
 
 function addOpenDoorMesssageTable(message) {
-    var $openDoorMesssageTable = $("#openDoorMesssageTable");
+    var openDoorMesssageTable = $("#openDoorMesssageTable");
     //列表中显示的开门消息数量（不包括head tr）
-    var num = $openDoorMesssageTable.find("tr").length - 1;
+    var num = openDoorMesssageTable.find("tr").length - 1;
     if (num >= OPEN_DOOR_MEESSAGE_NUM) {
-        $openDoorMesssageTable.find("tr:eq(" + OPEN_DOOR_MEESSAGE_NUM + ")").remove();
+        openDoorMesssageTable.find("tr:eq(" + OPEN_DOOR_MEESSAGE_NUM + ")").remove();
     }
-    $openDoorMesssageTable.find(":first").after(message);
+    openDoorMesssageTable.find(":first").after(message);
 }
 
 function createOpenDoorMesssageTable() {
@@ -68,9 +68,9 @@ function getUnitArea(){
                 pl = province_data.length;
                 cl = city_data.length;
                 create_xiaoqu(unit_id, xiaoqu_name, lat, lng, city_code, city_name, province);     
-                create_province(lat, lng, province, total_counts, avg_sigal, pl);
-                create_city(lat, lng, city_name, province, total_counts, avg_sigal, cl);
-                create_dots(lat, lng, unit_id);
+                //create_province(lat, lng, province, total_counts, avg_sigal, pl);
+                //create_city(lat, lng, city_name, province, total_counts, avg_sigal, cl);
+                //create_dots(lat, lng, unit_id);
             }
             //然后加载百度echarts图表，其他图表在有数据传输过来时才生成
             //loadEChart(data, geoCoordMap);
@@ -326,12 +326,12 @@ function re_loadEChart(unit_id, xiaoqu_name, open_status, signal, network, open_
     }
 	if(open_status === '6' || open_status === '7') {
 		  open_status = '成功';
-		  str = '<tr class="success"><td>'+xiaoqu_name+'</td><td>'+getNowFormatDate()+'</td><td>'+signal+'</td><td>'+open_door+'</td><td>'+DT+'</td><td>'+network+'</td><td>'+"成功！"+'</td></tr>'+str;
+		  str = '<tr class="success"><td>'+xiaoqu_name+'</td><td>'+getNowFormatDate()+'</td><td>'+signal+'</td><td>'+open_door+'</td><td>'+DT+'</td><td>'+network+'</td><td>'+"成功！"+'</td></tr>';
 		  success_counts += 1;
 	}
 	else {
 		  open_status = '失败';
-		  str = '<tr class="fail"><td>'+xiaoqu_name+'</td><td>'+getNowFormatDate()+'</td><td>'+signal+'</td><td>'+open_door+'</td><td>'+DT+'</td><td>'+network+'</td><td>'+"失败！"+'</td></tr>'+str;
+		  str = '<tr class="fail"><td>'+xiaoqu_name+'</td><td>'+getNowFormatDate()+'</td><td>'+signal+'</td><td>'+open_door+'</td><td>'+DT+'</td><td>'+network+'</td><td>'+"失败！"+'</td></tr>';
 		  fail_counts += 1;
 	}
     //将开门数据放入数组 dataXQ的格式 dataXQ = {[1,-55,"wifi","摇一摇","XIAOMI#MUI4",1],...}
